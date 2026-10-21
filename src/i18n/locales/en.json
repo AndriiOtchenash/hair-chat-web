@@ -8,7 +8,15 @@
     "signInHint": "Sign in to save your conversations and hair profile.",
     "signInWithGoogle": "Continue with Google",
     "signOut": "Sign out",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "errors": {
+      "access_denied": "Sign-in was cancelled or access was denied.",
+      "temporarily_unavailable": "The sign-in service is temporarily unavailable. Please try again later.",
+      "server_error": "The sign-in service had an error. Please try again later.",
+      "missing_transaction": "The sign-in attempt expired. Please try again.",
+      "state_mismatch": "The sign-in attempt expired. Please try again.",
+      "unknown": "Sign-in failed. Please try again."
+    }
   },
   "language": {
     "label": "Language"

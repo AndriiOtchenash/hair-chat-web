@@ -1,9 +1,13 @@
 import { useAuth0 } from '@auth0/auth0-react'
+import { AlertCircleIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { Navigate } from 'react-router'
 
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+
+import { useLoginError } from './useLoginError'
 
 /** Auth0 connection name for "Sign in with Google" (skips the Universal Login chooser). */
 export const GOOGLE_CONNECTION = 'google-oauth2'
@@ -11,6 +15,7 @@ export const GOOGLE_CONNECTION = 'google-oauth2'
 export function LoginPage() {
   const { t } = useTranslation()
   const { isAuthenticated, loginWithRedirect } = useAuth0()
+  const loginError = useLoginError()
 
   if (isAuthenticated) return <Navigate to="/" replace />
 
@@ -20,7 +25,13 @@ export function LoginPage() {
         <CardTitle>{t('auth.signInTitle')}</CardTitle>
         <CardDescription>{t('auth.signInHint')}</CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="space-y-4">
+        {loginError && (
+          <Alert variant="destructive">
+            <AlertCircleIcon aria-hidden />
+            <AlertDescription>{loginError}</AlertDescription>
+          </Alert>
+        )}
         <Button
           className="w-full"
           onClick={() =>

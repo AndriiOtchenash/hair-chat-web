@@ -8,7 +8,15 @@
     "signInHint": "Zaloguj się, aby zapisywać rozmowy i profil włosów.",
     "signInWithGoogle": "Zaloguj się przez Google",
     "signOut": "Wyloguj się",
-    "loading": "Ładowanie…"
+    "loading": "Ładowanie…",
+    "errors": {
+      "access_denied": "Logowanie zostało anulowane lub odmówiono dostępu.",
+      "temporarily_unavailable": "Usługa logowania jest chwilowo niedostępna. Spróbuj później.",
+      "server_error": "Błąd usługi logowania. Spróbuj później.",
+      "missing_transaction": "Próba logowania wygasła. Spróbuj ponownie.",
+      "state_mismatch": "Próba logowania wygasła. Spróbuj ponownie.",
+      "unknown": "Nie udało się zalogować. Spróbuj ponownie."
+    }
   },
   "language": {
     "label": "Język"

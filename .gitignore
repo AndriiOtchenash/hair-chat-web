@@ -154,3 +154,6 @@ vite.config.ts.timestamp-*
 *.local
 .vscode/*
 !.vscode/extensions.json
+
+# Claude Code /export transcripts
+*-pastedcontent-*.txt

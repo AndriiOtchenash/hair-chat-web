@@ -7,6 +7,7 @@ type Auth0State = ReturnType<typeof useAuth0>
 export const auth0 = {
   isLoading: false,
   isAuthenticated: true,
+  error: undefined as Error | undefined,
   user: { sub: 'google-oauth2|123', name: 'Test User' },
   getAccessTokenSilently: vi.fn(() => Promise.resolve('test-token')),
   loginWithRedirect: vi.fn(() => Promise.resolve()),
@@ -16,6 +17,7 @@ export const auth0 = {
 export function resetAuth0(): void {
   auth0.isLoading = false
   auth0.isAuthenticated = true
+  auth0.error = undefined
   auth0.getAccessTokenSilently = vi.fn(() => Promise.resolve('test-token'))
   auth0.loginWithRedirect = vi.fn(() => Promise.resolve())
   auth0.logout = vi.fn(() => Promise.resolve())
