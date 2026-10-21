@@ -19,13 +19,13 @@
     }
   },
   "language": {
-    "label": "Language"
+    "label": "Language",
+    "saveFailed": "Could not save the language to your profile. It still applies in this browser."
   },
   "me": {
     "title": "Your account",
     "id": "ID",
     "role": "Role",
-    "locale": "Language",
     "roles": {
       "user": "User",
       "specialist": "Specialist",
@@ -51,6 +51,45 @@
     "internal_error": "Server error. Please try again later.",
     "network_error": "Cannot reach the server. Check your connection.",
     "bad_response": "The server returned an unexpected response.",
-    "unknown": "Unexpected error. Please try again."
+    "unknown": "Unexpected error. Please try again.",
+    "consent_version_mismatch": "The consent texts have changed. Reload the page to see the current version."
+  },
+  "nav": {
+    "chat": "Chat",
+    "settings": "Settings"
+  },
+  "chat": {
+    "title": "Chat",
+    "comingSoon": "The chat will be here soon."
+  },
+  "consents": {
+    "title": "Before we start",
+    "updatedTitle": "The terms have been updated",
+    "intro": "Please read and accept the conditions below to use the chat.",
+    "updatedIntro": "We have changed the texts you agreed to. Please read and accept them again to keep using the chat.",
+    "more": "Read more",
+    "close": "Close",
+    "continue": "Continue",
+    "allGranted": "You have accepted all conditions.",
+    "toChat": "Go to chat",
+    "outdatedTitle": "Consent texts are out of date",
+    "outdated": "This page shows an old version of the consent texts. Reload the page; if that does not help, try again later.",
+    "status": {
+      "granted": "Accepted on {{date}}",
+      "outdated": "Needs to be accepted again",
+      "missing": "Not accepted"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": "Language",
+    "consents": "Consents",
+    "revoke": "Withdraw",
+    "grant": "Give consents",
+    "revokeTitle": "Withdraw consent?",
+    "revokeText": "Without this consent the chat becomes unavailable until you accept it again. Withdrawing does not delete your data; data deletion is a separate request.",
+    "revokeConfirm": "Withdraw",
+    "cancel": "Cancel",
+    "revoked": "Consent withdrawn."
   }
 }

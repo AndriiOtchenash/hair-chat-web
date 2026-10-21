@@ -38,6 +38,13 @@ Application "SPA" settings must list the URL you open (codespace URL and/or http
 
 Public SPA settings live in `.env.development`; override locally in `.env.local` (see `.env.example`).
 
+## Consent texts
+
+`src/consents/<version>/{uk,pl,en,ru}.md` — 18+, health data (GDPR art. 9), AI processing.
+**Draft: legal review is required before production.** Format and the versioning rule:
+[src/consents/README.md](src/consents/README.md); the version must match the backend's
+`CONSENT_VERSION`.
+
 ## Everyday commands
 
 ```bash

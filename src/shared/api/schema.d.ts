@@ -4,103 +4,104 @@
  */
 
 export interface paths {
-  "/health": {
+  '/health': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Health */
-    get: operations["health_health_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/me": {
+    get: operations['health_health_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/me': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Me */
-    get: operations["me_me_get"];
-    put?: never;
-    post?: never;
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/consents": {
+    get: operations['me_me_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    /** Update Me */
+    patch: operations['update_me_me_patch']
+    trace?: never
+  }
+  '/consents': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** Get Consents */
-    get: operations["get_consents_consents_get"];
-    put?: never;
+    get: operations['get_consents_consents_get']
+    put?: never
     /** Grant Consents */
-    post: operations["grant_consents_consents_post"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/consents/{consent_type}": {
+    post: operations['grant_consents_consents_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/consents/{consent_type}': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    get?: never;
-    put?: never;
-    post?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
     /** Revoke Consent */
-    delete: operations["revoke_consent_consents__consent_type__delete"];
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/conversations": {
+    delete: operations['revoke_consent_consents__consent_type__delete']
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/conversations': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** List Conversations */
-    get: operations["list_conversations_conversations_get"];
-    put?: never;
+    get: operations['list_conversations_conversations_get']
+    put?: never
     /** Create Conversation */
-    post: operations["create_conversation_conversations_post"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
-  "/conversations/{conversation_id}/messages": {
+    post: operations['create_conversation_conversations_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
+  '/conversations/{conversation_id}/messages': {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     /** List Messages */
-    get: operations["list_messages_conversations__conversation_id__messages_get"];
-    put?: never;
+    get: operations['list_messages_conversations__conversation_id__messages_get']
+    put?: never
     /**
      * Send Message
      * @description Streams the answer: safety_notice? token* (restart token*)* then done, or error.
@@ -110,433 +111,470 @@ export interface paths {
      *     FastAPI adds a `: ping` comment every 15 s while idle and the no-buffering headers.
      *     Background tasks run after the stream ends, and not at all if the client disconnects.
      */
-    post: operations["send_message_conversations__conversation_id__messages_post"];
-    delete?: never;
-    options?: never;
-    head?: never;
-    patch?: never;
-    trace?: never;
-  };
+    post: operations['send_message_conversations__conversation_id__messages_post']
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
 }
-export type webhooks = Record<string, never>;
+export type webhooks = Record<string, never>
 export interface components {
   schemas: {
     /** ConsentItem */
     ConsentItem: {
-      type: components["schemas"]["ConsentType"];
+      type: components['schemas']['ConsentType']
       /** Granted */
-      granted: boolean;
+      granted: boolean
       /** Version */
-      version: string | null;
+      version: string | null
       /** Granted At */
-      granted_at: string | null;
-    };
+      granted_at: string | null
+    }
     /**
      * ConsentType
      * @enum {string}
      */
-    ConsentType: "age_18" | "health_data" | "ai_processing";
+    ConsentType: 'age_18' | 'health_data' | 'ai_processing'
     /** ConsentsResponse */
     ConsentsResponse: {
       /** Required Version */
-      required_version: string;
+      required_version: string
       /** Items */
-      items: components["schemas"]["ConsentItem"][];
-    };
+      items: components['schemas']['ConsentItem'][]
+    }
     /** ConversationOut */
     ConversationOut: {
       /**
        * Id
        * Format: uuid
        */
-      id: string;
+      id: string
       /** Title */
-      title: string | null;
+      title: string | null
       /**
        * Created At
        * Format: date-time
        */
-      created_at: string;
+      created_at: string
       /**
        * Last Message At
        * Format: date-time
        */
-      last_message_at: string;
-    };
+      last_message_at: string
+    }
     /** ConversationsPage */
     ConversationsPage: {
       /** Items */
-      items: components["schemas"]["ConversationOut"][];
+      items: components['schemas']['ConversationOut'][]
       /** Next Cursor */
-      next_cursor: string | null;
-    };
+      next_cursor: string | null
+    }
     /** GrantConsentsRequest */
     GrantConsentsRequest: {
       /** Types */
-      types: components["schemas"]["ConsentType"][];
+      types: components['schemas']['ConsentType'][]
       /** Version */
-      version: string;
-    };
+      version: string
+    }
     /** HTTPValidationError */
     HTTPValidationError: {
       /** Detail */
-      detail?: components["schemas"]["ValidationError"][];
-    };
+      detail?: components['schemas']['ValidationError'][]
+    }
     /** HealthResponse */
     HealthResponse: {
       /**
        * Status
        * @constant
        */
-      status: "ok";
+      status: 'ok'
       /**
        * Db
        * @enum {string}
        */
-      db: "ok" | "down";
-    };
+      db: 'ok' | 'down'
+    }
     /**
      * Locale
      * @enum {string}
      */
-    Locale: "uk" | "pl" | "en" | "ru";
+    Locale: 'uk' | 'pl' | 'en' | 'ru'
     /** MeResponse */
     MeResponse: {
       /**
        * Id
        * Format: uuid
        */
-      id: string;
-      role: components["schemas"]["UserRole"];
-      locale: components["schemas"]["Locale"];
+      id: string
+      role: components['schemas']['UserRole']
+      locale: components['schemas']['Locale']
       /**
        * Created At
        * Format: date-time
        */
-      created_at: string;
-    };
+      created_at: string
+    }
     /** MessageOut */
     MessageOut: {
       /**
        * Id
        * Format: uuid
        */
-      id: string;
-      role: components["schemas"]["MessageRole"];
+      id: string
+      role: components['schemas']['MessageRole']
       /** Content */
-      content: string;
+      content: string
       /** Provider */
-      provider: string | null;
+      provider: string | null
       /** Model */
-      model: string | null;
+      model: string | null
       /**
        * Created At
        * Format: date-time
        */
-      created_at: string;
-    };
+      created_at: string
+    }
     /**
      * MessageRole
      * @enum {string}
      */
-    MessageRole: "user" | "assistant" | "system";
+    MessageRole: 'user' | 'assistant' | 'system'
     /**
      * MessagesPage
      * @description Newest first; follow next_cursor for older messages.
      */
     MessagesPage: {
       /** Items */
-      items: components["schemas"]["MessageOut"][];
+      items: components['schemas']['MessageOut'][]
       /** Next Cursor */
-      next_cursor: string | null;
-    };
+      next_cursor: string | null
+    }
     /** SendMessageRequest */
     SendMessageRequest: {
       /** Content */
-      content: string;
-    };
+      content: string
+    }
+    /** UpdateMeRequest */
+    UpdateMeRequest: {
+      locale: components['schemas']['Locale']
+    }
     /**
      * UserRole
      * @enum {string}
      */
-    UserRole: "user" | "specialist" | "admin";
+    UserRole: 'user' | 'specialist' | 'admin'
     /** ValidationError */
     ValidationError: {
       /** Location */
-      loc: (string | number)[];
+      loc: (string | number)[]
       /** Message */
-      msg: string;
+      msg: string
       /** Error Type */
-      type: string;
+      type: string
       /** Input */
-      input?: unknown;
+      input?: unknown
       /** Context */
-      ctx?: Record<string, never>;
-    };
-  };
-  responses: never;
-  parameters: never;
-  requestBodies: never;
-  headers: never;
-  pathItems: never;
+      ctx?: Record<string, never>
+    }
+  }
+  responses: never
+  parameters: never
+  requestBodies: never
+  headers: never
+  pathItems: never
 }
-export type $defs = Record<string, never>;
+export type $defs = Record<string, never>
 export interface operations {
   health_health_get: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       /** @description Successful Response */
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["HealthResponse"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['HealthResponse']
+        }
+      }
+    }
+  }
   me_me_get: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       /** @description Successful Response */
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["MeResponse"];
-        };
-      };
-    };
-  };
-  get_consents_consents_get: {
+          'application/json': components['schemas']['MeResponse']
+        }
+      }
+    }
+  }
+  update_me_me_patch: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
-    responses: {
-      /** @description Successful Response */
-      200: {
-        headers: {
-          [name: string]: unknown;
-        };
-        content: {
-          "application/json": components["schemas"]["ConsentsResponse"];
-        };
-      };
-    };
-  };
-  grant_consents_consents_post: {
-    parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["GrantConsentsRequest"];
-      };
-    };
+        'application/json': components['schemas']['UpdateMeRequest']
+      }
+    }
     responses: {
       /** @description Successful Response */
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ConsentsResponse"];
-        };
-      };
+          'application/json': components['schemas']['MeResponse']
+        }
+      }
       /** @description Validation Error */
       422: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  get_consents_consents_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ConsentsResponse']
+        }
+      }
+    }
+  }
+  grant_consents_consents_post: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['GrantConsentsRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ConsentsResponse']
+        }
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   revoke_consent_consents__consent_type__delete: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        consent_type: components["schemas"]["ConsentType"];
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        consent_type: components['schemas']['ConsentType']
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       /** @description Successful Response */
       204: {
         headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
+          [name: string]: unknown
+        }
+        content?: never
+      }
       /** @description Validation Error */
       422: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   list_conversations_conversations_get: {
     parameters: {
       query?: {
-        limit?: number;
+        limit?: number
         /** @description next_cursor of the previous page */
-        cursor?: string | null;
-      };
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+        cursor?: string | null
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       /** @description Successful Response */
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ConversationsPage"];
-        };
-      };
+          'application/json': components['schemas']['ConversationsPage']
+        }
+      }
       /** @description Validation Error */
       422: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   create_conversation_conversations_post: {
     parameters: {
-      query?: never;
-      header?: never;
-      path?: never;
-      cookie?: never;
-    };
-    requestBody?: never;
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       /** @description Successful Response */
       201: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["ConversationOut"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['ConversationOut']
+        }
+      }
+    }
+  }
   list_messages_conversations__conversation_id__messages_get: {
     parameters: {
       query?: {
-        limit?: number;
+        limit?: number
         /** @description next_cursor of the previous page */
-        cursor?: string | null;
-      };
-      header?: never;
+        cursor?: string | null
+      }
+      header?: never
       path: {
-        conversation_id: string;
-      };
-      cookie?: never;
-    };
-    requestBody?: never;
+        conversation_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
     responses: {
       /** @description Successful Response */
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["MessagesPage"];
-        };
-      };
+          'application/json': components['schemas']['MessagesPage']
+        }
+      }
       /** @description Validation Error */
       422: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "application/json": components["schemas"]["HTTPValidationError"];
-        };
-      };
-    };
-  };
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   send_message_conversations__conversation_id__messages_post: {
     parameters: {
-      query?: never;
-      header?: never;
+      query?: never
+      header?: never
       path: {
-        conversation_id: string;
-      };
-      cookie?: never;
-    };
+        conversation_id: string
+      }
+      cookie?: never
+    }
     requestBody: {
       content: {
-        "application/json": components["schemas"]["SendMessageRequest"];
-      };
-    };
+        'application/json': components['schemas']['SendMessageRequest']
+      }
+    }
     responses: {
       /** @description Successful Response */
       200: {
         headers: {
-          [name: string]: unknown;
-        };
+          [name: string]: unknown
+        }
         content: {
-          "text/event-stream": unknown;
-        };
-      };
+          'text/event-stream': unknown
+        }
+      }
       /** @description Missing or someone else's conversation */
       404: {
         headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
+          [name: string]: unknown
+        }
+        content?: never
+      }
       /** @description conversation_busy: an answer is already streaming */
       409: {
         headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
+          [name: string]: unknown
+        }
+        content?: never
+      }
       /** @description message_blocked (moderation; the message is not saved) or validation_error */
       422: {
         headers: {
-          [name: string]: unknown;
-        };
-        content?: never;
-      };
-    };
-  };
+          [name: string]: unknown
+        }
+        content?: never
+      }
+    }
+  }
 }

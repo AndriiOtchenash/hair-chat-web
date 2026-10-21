@@ -42,12 +42,36 @@ void i18n
     fallbackLng: 'en',
     interpolation: { escapeValue: false }, // React escapes
     detection: {
-      // The user's choice in the switcher wins over the browser language.
+      // An explicit choice (switcher) wins over the browser language. Detected languages are not
+      // cached, so "no explicit choice" stays visible and the profile locale can apply instead.
       order: ['localStorage', 'navigator'],
       lookupLocalStorage: LANGUAGE_STORAGE_KEY,
-      caches: ['localStorage'],
+      caches: [],
     },
   })
+
+/** The language the user picked in this browser (switcher), or null if it was only detected. */
+export function getExplicitLanguage(): Language | null {
+  try {
+    const value = localStorage.getItem(LANGUAGE_STORAGE_KEY) ?? undefined
+    return isLanguage(value) ? value : null
+  } catch {
+    return null
+  }
+}
+
+export function rememberExplicitLanguage(language: Language): void {
+  try {
+    localStorage.setItem(LANGUAGE_STORAGE_KEY, language)
+  } catch {
+    // storage blocked: the choice lasts for this page only
+  }
+}
+
+/** Current UI language as one of ours (falls back to en). */
+export function currentLanguage(): Language {
+  return isLanguage(i18n.resolvedLanguage) ? i18n.resolvedLanguage : 'en'
+}
 
 i18n.on('languageChanged', (lng) => {
   document.documentElement.lang = lng

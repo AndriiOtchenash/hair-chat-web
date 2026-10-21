@@ -105,3 +105,44 @@ describe('createApiClient', () => {
     expect(hit).not.toHaveBeenCalled()
   })
 })
+
+describe('createApiClient consent_required', () => {
+  it('calls onConsentRequired only for 403 consent_required', async () => {
+    const onConsentRequired = vi.fn()
+    const client = createApiClient({
+      baseUrl: API,
+      getToken: () => Promise.resolve('tok'),
+      onUnauthorized: vi.fn(),
+      onConsentRequired,
+    })
+    server.use(
+      http.get(`${API}/conversations`, () =>
+        HttpResponse.json({ code: 'consent_required', message: 'x' }, { status: 403 }),
+      ),
+      http.get(`${API}/me`, () =>
+        HttpResponse.json({ code: 'forbidden', message: 'x' }, { status: 403 }),
+      ),
+    )
+
+    await expect(client.get('/me')).rejects.toMatchObject({ code: 'forbidden' })
+    expect(onConsentRequired).not.toHaveBeenCalled()
+    await expect(client.get('/conversations')).rejects.toMatchObject({ code: 'consent_required' })
+    expect(onConsentRequired).toHaveBeenCalledOnce()
+  })
+
+  it('sends JSON bodies for PATCH and treats 204 as empty', async () => {
+    let body: unknown = null
+    server.use(
+      http.patch(`${API}/me`, async ({ request }) => {
+        body = await request.json()
+        return HttpResponse.json({ ok: true })
+      }),
+      http.delete(`${API}/consents/age_18`, () => new HttpResponse(null, { status: 204 })),
+    )
+    const { client } = makeClient()
+
+    await expect(client.patch('/me', { locale: 'pl' })).resolves.toEqual({ ok: true })
+    expect(body).toEqual({ locale: 'pl' })
+    await expect(client.delete('/consents/age_18')).resolves.toBeUndefined()
+  })
+})

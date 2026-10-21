@@ -19,13 +19,13 @@
     }
   },
   "language": {
-    "label": "Język"
+    "label": "Język",
+    "saveFailed": "Nie udało się zapisać języka w profilu. W tej przeglądarce nadal obowiązuje."
   },
   "me": {
     "title": "Twoje konto",
     "id": "ID",
     "role": "Rola",
-    "locale": "Język",
     "roles": {
       "user": "Użytkownik",
       "specialist": "Specjalista",
@@ -51,6 +51,45 @@
     "internal_error": "Błąd serwera. Spróbuj później.",
     "network_error": "Brak połączenia z serwerem. Sprawdź połączenie.",
     "bad_response": "Serwer zwrócił nieoczekiwaną odpowiedź.",
-    "unknown": "Nieoczekiwany błąd. Spróbuj ponownie."
+    "unknown": "Nieoczekiwany błąd. Spróbuj ponownie.",
+    "consent_version_mismatch": "Teksty zgód się zmieniły. Odśwież stronę, aby zobaczyć aktualną wersję."
+  },
+  "nav": {
+    "chat": "Czat",
+    "settings": "Ustawienia"
+  },
+  "chat": {
+    "title": "Czat",
+    "comingSoon": "Wkrótce będzie tu czat."
+  },
+  "consents": {
+    "title": "Zanim zaczniemy",
+    "updatedTitle": "Warunki zostały zaktualizowane",
+    "intro": "Przeczytaj i zaakceptuj poniższe warunki, aby korzystać z czatu.",
+    "updatedIntro": "Zmieniliśmy teksty, na które się zgodziłeś. Przeczytaj je i zaakceptuj ponownie, aby dalej korzystać z czatu.",
+    "more": "Więcej",
+    "close": "Zamknij",
+    "continue": "Dalej",
+    "allGranted": "Zaakceptowałeś wszystkie warunki.",
+    "toChat": "Przejdź do czatu",
+    "outdatedTitle": "Teksty zgód są nieaktualne",
+    "outdated": "Strona pokazuje starą wersję tekstów zgód. Odśwież stronę; jeśli to nie pomoże, spróbuj później.",
+    "status": {
+      "granted": "Zaakceptowano {{date}}",
+      "outdated": "Wymaga ponownej akceptacji",
+      "missing": "Niezaakceptowano"
+    }
+  },
+  "settings": {
+    "title": "Ustawienia",
+    "language": "Język",
+    "consents": "Zgody",
+    "revoke": "Wycofaj",
+    "grant": "Wyraź zgody",
+    "revokeTitle": "Wycofać zgodę?",
+    "revokeText": "Bez tej zgody czat będzie niedostępny, dopóki nie zaakceptujesz jej ponownie. Wycofanie nie usuwa Twoich danych; usunięcie danych to osobne żądanie.",
+    "revokeConfirm": "Wycofaj",
+    "cancel": "Anuluj",
+    "revoked": "Zgoda wycofana."
   }
 }
