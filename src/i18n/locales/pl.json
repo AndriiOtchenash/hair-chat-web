@@ -1,0 +1,56 @@
+{
+  "app": {
+    "title": "Hair Chat",
+    "tagline": "Porady dotyczące pielęgnacji włosów od asystenta AI"
+  },
+  "auth": {
+    "signInTitle": "Logowanie",
+    "signInHint": "Zaloguj się, aby zapisywać rozmowy i profil włosów.",
+    "signInWithGoogle": "Zaloguj się przez Google",
+    "signOut": "Wyloguj się",
+    "loading": "Ładowanie…",
+    "errors": {
+      "access_denied": "Logowanie zostało anulowane lub odmówiono dostępu.",
+      "temporarily_unavailable": "Usługa logowania jest chwilowo niedostępna. Spróbuj później.",
+      "server_error": "Błąd usługi logowania. Spróbuj później.",
+      "missing_transaction": "Próba logowania wygasła. Spróbuj ponownie.",
+      "state_mismatch": "Próba logowania wygasła. Spróbuj ponownie.",
+      "unknown": "Nie udało się zalogować. Spróbuj ponownie."
+    }
+  },
+  "language": {
+    "label": "Język"
+  },
+  "me": {
+    "title": "Twoje konto",
+    "id": "ID",
+    "role": "Rola",
+    "locale": "Język",
+    "roles": {
+      "user": "Użytkownik",
+      "specialist": "Specjalista",
+      "admin": "Administrator"
+    },
+    "retry": "Spróbuj ponownie"
+  },
+  "aiDisclosure": {
+    "text": "Rozmawiasz z asystentem AI. Jego porady są kosmetyczne, a nie medyczne."
+  },
+  "errors": {
+    "title": "Coś poszło nie tak",
+    "not_authenticated": "Sesja wygasła. Zaloguj się ponownie.",
+    "invalid_token": "Sesja wygasła. Zaloguj się ponownie.",
+    "user_token_required": "Ta czynność wymaga zalogowania jako użytkownik.",
+    "account_deleted": "To konto zostało usunięte.",
+    "forbidden": "Nie masz do tego dostępu.",
+    "auth_unavailable": "Usługa logowania jest chwilowo niedostępna. Spróbuj później.",
+    "auth_not_configured": "Logowanie nie jest skonfigurowane na serwerze.",
+    "consent_required": "Aby kontynuować, wyraź wymagane zgody.",
+    "not_found": "Nie znaleziono.",
+    "validation_error": "Żądanie zawiera nieprawidłowe dane.",
+    "internal_error": "Błąd serwera. Spróbuj później.",
+    "network_error": "Brak połączenia z serwerem. Sprawdź połączenie.",
+    "bad_response": "Serwer zwrócił nieoczekiwaną odpowiedź.",
+    "unknown": "Nieoczekiwany błąd. Spróbuj ponownie."
+  }
+}

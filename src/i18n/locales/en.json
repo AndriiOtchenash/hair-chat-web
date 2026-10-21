@@ -1,0 +1,56 @@
+{
+  "app": {
+    "title": "Hair Chat",
+    "tagline": "Hair-care advice from an AI assistant"
+  },
+  "auth": {
+    "signInTitle": "Sign in",
+    "signInHint": "Sign in to save your conversations and hair profile.",
+    "signInWithGoogle": "Continue with Google",
+    "signOut": "Sign out",
+    "loading": "Loading…",
+    "errors": {
+      "access_denied": "Sign-in was cancelled or access was denied.",
+      "temporarily_unavailable": "The sign-in service is temporarily unavailable. Please try again later.",
+      "server_error": "The sign-in service had an error. Please try again later.",
+      "missing_transaction": "The sign-in attempt expired. Please try again.",
+      "state_mismatch": "The sign-in attempt expired. Please try again.",
+      "unknown": "Sign-in failed. Please try again."
+    }
+  },
+  "language": {
+    "label": "Language"
+  },
+  "me": {
+    "title": "Your account",
+    "id": "ID",
+    "role": "Role",
+    "locale": "Language",
+    "roles": {
+      "user": "User",
+      "specialist": "Specialist",
+      "admin": "Administrator"
+    },
+    "retry": "Try again"
+  },
+  "aiDisclosure": {
+    "text": "You are chatting with an AI assistant. Its advice is cosmetic, not medical."
+  },
+  "errors": {
+    "title": "Something went wrong",
+    "not_authenticated": "Your session has ended. Please sign in again.",
+    "invalid_token": "Your session has ended. Please sign in again.",
+    "user_token_required": "This action requires signing in as a user.",
+    "account_deleted": "This account has been deleted.",
+    "forbidden": "You do not have access to this.",
+    "auth_unavailable": "Sign-in service is temporarily unavailable. Please try again later.",
+    "auth_not_configured": "Sign-in is not configured on the server.",
+    "consent_required": "Please accept the required consents to continue.",
+    "not_found": "Not found.",
+    "validation_error": "The request contains invalid data.",
+    "internal_error": "Server error. Please try again later.",
+    "network_error": "Cannot reach the server. Check your connection.",
+    "bad_response": "The server returned an unexpected response.",
+    "unknown": "Unexpected error. Please try again."
+  }
+}
