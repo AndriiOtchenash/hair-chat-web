@@ -22,11 +22,11 @@ describe('LoginPage', () => {
     })
   })
 
-  it('sends signed-in users from /login to the home page', async () => {
+  it('sends signed-in users from /login to the chat', async () => {
     const { router } = renderApp('/login')
 
-    expect(await screen.findByText('Your account')).toBeInTheDocument()
-    expect(router.state.location.pathname).toBe('/')
+    expect(await screen.findByText('The chat will be here soon.')).toBeInTheDocument()
+    expect(router.state.location.pathname).toBe('/chat')
   })
 
   it('shows a spinner while Auth0 restores the session', () => {

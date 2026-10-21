@@ -122,3 +122,16 @@
     @apply bg-background text-foreground;
   }
 }
+
+/*
+ * sonner (< 600px) sets the toaster to left/right: 16px AND width: 100%, so its box ends 16px past
+ * the right edge of the viewport. Let left/right define the width and give toasts the full width.
+ */
+@media (max-width: 600px) {
+  [data-sonner-toaster][data-sonner-toaster] {
+    width: auto;
+  }
+  [data-sonner-toaster][data-sonner-toaster] [data-sonner-toast] {
+    width: 100%;
+  }
+}

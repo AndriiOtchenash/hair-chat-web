@@ -9,11 +9,12 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { LANGUAGE_NAMES, SUPPORTED_LANGUAGES, isLanguage } from '@/i18n'
+import { useChangeLanguage } from '@/features/language/useChangeLanguage'
+import { LANGUAGE_NAMES, SUPPORTED_LANGUAGES, currentLanguage, isLanguage } from '@/i18n'
 
 export function LanguageSwitcher() {
-  const { t, i18n } = useTranslation()
-  const current = isLanguage(i18n.resolvedLanguage) ? i18n.resolvedLanguage : 'en'
+  const { t } = useTranslation()
+  const current = currentLanguage()
 
   return (
     <DropdownMenu>
@@ -24,17 +25,27 @@ export function LanguageSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuRadioGroup
-          value={current}
-          onValueChange={(lng) => void i18n.changeLanguage(lng)}
-        >
-          {SUPPORTED_LANGUAGES.map((lng) => (
-            <DropdownMenuRadioItem key={lng} value={lng} lang={lng}>
-              {LANGUAGE_NAMES[lng]}
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
+        <LanguageRadioItems />
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+/** Language choices for any dropdown (the switcher and the mobile menu). */
+export function LanguageRadioItems() {
+  const changeLanguage = useChangeLanguage()
+  return (
+    <DropdownMenuRadioGroup
+      value={currentLanguage()}
+      onValueChange={(lng) => {
+        if (isLanguage(lng)) changeLanguage(lng)
+      }}
+    >
+      {SUPPORTED_LANGUAGES.map((lng) => (
+        <DropdownMenuRadioItem key={lng} value={lng} lang={lng}>
+          {LANGUAGE_NAMES[lng]}
+        </DropdownMenuRadioItem>
+      ))}
+    </DropdownMenuRadioGroup>
   )
 }

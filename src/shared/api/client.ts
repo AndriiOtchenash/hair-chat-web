@@ -6,12 +6,17 @@ export interface ApiClientOptions {
   getToken: () => Promise<string>
   /** Called once per 401 (or failed token refresh) so the app can log the user out. */
   onUnauthorized: () => void
+  /** Called on 403 consent_required (backend rule 7) so the app can show the consent screen. */
+  onConsentRequired?: () => void
   fetch?: typeof fetch
 }
 
 export interface ApiClient {
   request<T>(path: string, init?: RequestInit): Promise<T>
   get<T>(path: string): Promise<T>
+  post<T>(path: string, body: unknown): Promise<T>
+  patch<T>(path: string, body: unknown): Promise<T>
+  delete(path: string): Promise<void>
 }
 
 export function createApiClient(options: ApiClientOptions): ApiClient {
@@ -44,6 +49,9 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     if (!response.ok) {
       const error = await errorFromResponse(response)
       if (response.status === 401) options.onUnauthorized()
+      if (response.status === 403 && error.code === 'consent_required') {
+        options.onConsentRequired?.()
+      }
       throw error
     }
     if (response.status === 204) return undefined as T
@@ -53,5 +61,10 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
   return {
     request,
     get: <T>(path: string) => request<T>(path, { method: 'GET' }),
+    post: <T>(path: string, body: unknown) =>
+      request<T>(path, { method: 'POST', body: JSON.stringify(body) }),
+    patch: <T>(path: string, body: unknown) =>
+      request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
+    delete: (path: string) => request<undefined>(path, { method: 'DELETE' }),
   }
 }

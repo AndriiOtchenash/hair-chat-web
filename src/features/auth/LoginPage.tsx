@@ -20,7 +20,7 @@ export function LoginPage() {
   if (isAuthenticated) return <Navigate to="/" replace />
 
   return (
-    <Card className="mx-auto max-w-sm">
+    <Card className="mx-auto w-full max-w-sm">
       <CardHeader>
         <CardTitle>{t('auth.signInTitle')}</CardTitle>
         <CardDescription>{t('auth.signInHint')}</CardDescription>
