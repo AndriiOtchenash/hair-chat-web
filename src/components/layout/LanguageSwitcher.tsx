@@ -14,7 +14,6 @@ import { LANGUAGE_NAMES, SUPPORTED_LANGUAGES, currentLanguage, isLanguage } from
 
 export function LanguageSwitcher() {
   const { t } = useTranslation()
-  const changeLanguage = useChangeLanguage()
   const current = currentLanguage()
 
   return (
@@ -26,19 +25,27 @@ export function LanguageSwitcher() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuRadioGroup
-          value={current}
-          onValueChange={(lng) => {
-            if (isLanguage(lng)) changeLanguage(lng)
-          }}
-        >
-          {SUPPORTED_LANGUAGES.map((lng) => (
-            <DropdownMenuRadioItem key={lng} value={lng} lang={lng}>
-              {LANGUAGE_NAMES[lng]}
-            </DropdownMenuRadioItem>
-          ))}
-        </DropdownMenuRadioGroup>
+        <LanguageRadioItems />
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+/** Language choices for any dropdown (the switcher and the mobile menu). */
+export function LanguageRadioItems() {
+  const changeLanguage = useChangeLanguage()
+  return (
+    <DropdownMenuRadioGroup
+      value={currentLanguage()}
+      onValueChange={(lng) => {
+        if (isLanguage(lng)) changeLanguage(lng)
+      }}
+    >
+      {SUPPORTED_LANGUAGES.map((lng) => (
+        <DropdownMenuRadioItem key={lng} value={lng} lang={lng}>
+          {LANGUAGE_NAMES[lng]}
+        </DropdownMenuRadioItem>
+      ))}
+    </DropdownMenuRadioGroup>
   )
 }

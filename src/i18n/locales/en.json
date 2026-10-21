@@ -56,7 +56,8 @@
   },
   "nav": {
     "chat": "Chat",
-    "settings": "Settings"
+    "settings": "Settings",
+    "menu": "Menu"
   },
   "chat": {
     "title": "Chat",
