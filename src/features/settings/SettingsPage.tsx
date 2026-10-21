@@ -121,16 +121,28 @@ function ConsentRow({ type, item }: { type: ConsentType; item: ConsentItem | und
     const date = new Intl.DateTimeFormat(i18n.resolvedLanguage, { dateStyle: 'medium' }).format(
       new Date(item.granted_at),
     )
-    status = <Badge variant="secondary">{t('consents.status.granted', { date })}</Badge>
+    status = (
+      <Badge variant="secondary" className="whitespace-normal">
+        {t('consents.status.granted', { date })}
+      </Badge>
+    )
   } else if (item?.version) {
-    status = <Badge variant="outline">{t('consents.status.outdated')}</Badge>
+    status = (
+      <Badge variant="outline" className="whitespace-normal">
+        {t('consents.status.outdated')}
+      </Badge>
+    )
   } else {
-    status = <Badge variant="destructive">{t('consents.status.missing')}</Badge>
+    status = (
+      <Badge variant="destructive" className="whitespace-normal">
+        {t('consents.status.missing')}
+      </Badge>
+    )
   }
 
   return (
     <li className="flex flex-wrap items-center justify-between gap-3 py-3" aria-label={title}>
-      <div className="space-y-1">
+      <div className="min-w-0 space-y-1">
         <p className="text-sm font-medium">{title}</p>
         {status}
       </div>

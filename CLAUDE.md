@@ -87,6 +87,10 @@ src/test setup.ts, MSW server/handlers, Auth0 fake, renderApp helper
 5. Never log or send to third parties message content or profile data (analytics, error trackers).
 6. Tests assert behaviour through the UI / public functions (RTL queries by role/text), not
    component internals.
+7. Layout is checked at 360px wide (and 320–430): no horizontal scroll, 16px side gutters from
+   `main`/header `px-4`. Page cards are `w-full` + `max-w-*`; flex children with text get `min-w-0`;
+   no fixed widths or `100vw`. Overlays (dialogs, menus, toasts) stay inside the viewport too.
+   jsdom has no layout: check in a browser (DevTools device mode) or headless Playwright.
 
 ## Commands
 

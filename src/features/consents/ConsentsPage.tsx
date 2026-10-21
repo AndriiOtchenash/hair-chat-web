@@ -49,7 +49,7 @@ export function ConsentsPage() {
   }
   if (state.allGranted && !grant.isPending) {
     return (
-      <Card className="mx-auto max-w-xl">
+      <Card className="mx-auto w-full max-w-xl">
         <CardHeader>
           <CardTitle>{t('consents.allGranted')}</CardTitle>
         </CardHeader>
@@ -74,7 +74,7 @@ export function ConsentsPage() {
   const allChecked = CONSENT_TYPES.every(isChecked)
 
   return (
-    <Card className="mx-auto max-w-xl">
+    <Card className="mx-auto w-full max-w-xl">
       <CardHeader>
         <CardTitle>
           <h1>{state.hadOlderVersion ? t('consents.updatedTitle') : t('consents.title')}</h1>
@@ -95,7 +95,7 @@ export function ConsentsPage() {
                 toggle(type, value === true)
               }}
             />
-            <div className="space-y-1">
+            <div className="min-w-0 flex-1 space-y-1">
               <Label htmlFor={`consent-${type}`} className="leading-snug font-normal">
                 {texts[type].summary}
               </Label>

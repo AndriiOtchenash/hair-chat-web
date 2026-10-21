@@ -32,7 +32,7 @@ export function Header() {
   return (
     <header className="border-b">
       <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-4 px-4">
-        <span className="font-semibold whitespace-nowrap">{t('app.title')}</span>
+        <span className="min-w-0 truncate font-semibold">{t('app.title')}</span>
         {isAuthenticated ? (
           <>
             <DesktopNav />
@@ -51,7 +51,7 @@ function DesktopNav() {
   const { t } = useTranslation()
   const signOut = useSignOut()
   return (
-    <div className="hidden flex-1 items-center justify-between gap-2 sm:flex">
+    <div className="hidden min-w-0 flex-1 items-center justify-between gap-2 sm:flex">
       <nav className="flex items-center gap-1">
         {NAV.map(({ to, key }) => (
           <Button key={to} variant="ghost" size="sm" asChild>
@@ -77,7 +77,7 @@ function MobileMenu() {
   const { t } = useTranslation()
   const signOut = useSignOut()
   return (
-    <div className="sm:hidden">
+    <div className="shrink-0 sm:hidden">
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" size="icon" aria-label={t('nav.menu')}>
