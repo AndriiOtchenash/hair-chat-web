@@ -167,6 +167,56 @@ describe('messages', () => {
     expect(bad.closest('a')?.getAttribute('href') ?? '').not.toMatch(/javascript/i)
   })
 
+  it('renders GFM tables, strikethrough and autolinks with the same safety rules', async () => {
+    seedConversation([
+      message(
+        'm1',
+        'assistant',
+        [
+          '| Hair type | Wash |',
+          '| --- | --- |',
+          '| Oily | Every day |',
+          '| Dry <b>raw</b> | ~~Daily~~ Twice a week |',
+          '',
+          'See www.example.com and https://kb.example/oils',
+          '',
+          '![pixel](https://tracker.example/p.png)',
+        ].join('\n'),
+      ),
+    ])
+    renderApp(`/chat/${C1}`)
+
+    const table = await screen.findByRole('table')
+    expect(
+      within(table)
+        .getAllByRole('columnheader')
+        .map((th) => th.textContent),
+    ).toEqual(['Hair type', 'Wash'])
+    const rows = within(table).getAllByRole('row')
+    expect(rows).toHaveLength(3)
+    expect(
+      within(rows[1] as HTMLElement)
+        .getAllByRole('cell')
+        .map((td) => td.textContent),
+    ).toEqual(['Oily', 'Every day'])
+    // Raw HTML inside a cell is still dropped.
+    expect(within(table).queryByText('raw')).not.toBeInTheDocument()
+    expect(table.querySelector('b')).toBeNull()
+
+    expect(screen.getByText('Daily')).toHaveProperty('tagName', 'DEL')
+
+    for (const [name, href] of [
+      ['www.example.com', 'http://www.example.com'],
+      ['https://kb.example/oils', 'https://kb.example/oils'],
+    ] as const) {
+      const link = screen.getByRole('link', { name })
+      expect(link).toHaveAttribute('href', href)
+      expect(link).toHaveAttribute('target', '_blank')
+      expect(link.getAttribute('rel')).toContain('noopener')
+    }
+    expect(document.querySelector('img')).toBeNull()
+  })
+
   it('says when the conversation does not exist', async () => {
     renderApp('/chat/missing')
     expect(
