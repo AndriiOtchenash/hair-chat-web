@@ -128,7 +128,6 @@
     "data": {
       "title": "Your data",
       "intro": "Download a copy of everything we store about you, or delete your account.",
-      "download": "Download my data",
       "downloading": "Preparing the file…",
       "delete": "Delete account",
       "deleteTitle": "Delete your account?",
@@ -137,7 +136,10 @@
       "deleteExportFirst": "If you want to keep a copy, download your data first.",
       "confirmWord": "DELETE",
       "confirmLabel": "To confirm, type {{word}}",
-      "deleteConfirm": "Delete forever"
+      "deleteConfirm": "Delete forever",
+      "downloadHtml": "Download to read",
+      "downloadJson": "Download for transfer (JSON)",
+      "downloadHint": "“To read” is a page you can open in a browser or print. JSON is the full data in a machine-readable format, for moving it to another service."
     }
   },
   "safety": {
@@ -150,5 +152,29 @@
       "emergency": "emergency number if your life or someone else’s is in danger",
       "findAHelpline": "free helplines in your country"
     }
+  },
+  "export": {
+    "title": "Hair Chat — your data",
+    "exportedAt": "Exported on {{date}}",
+    "profile": "Profile",
+    "fields": {
+      "id": "Account ID",
+      "signInId": "Sign-in ID",
+      "email": "Email",
+      "name": "Name",
+      "language": "Language",
+      "role": "Role",
+      "createdAt": "Account created",
+      "ageConfirmedAt": "Age confirmed"
+    },
+    "consents": "Consents",
+    "consentType": "Consent",
+    "consentVersion": "Version",
+    "grantedAt": "Given",
+    "revokedAt": "Withdrawn",
+    "conversations": "Conversations ({{total}})",
+    "conversationDates": "Started {{created}} · last message {{last}}",
+    "summary": "Summary of earlier messages",
+    "none": "None."
   }
 }

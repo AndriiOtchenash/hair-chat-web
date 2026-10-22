@@ -1,4 +1,4 @@
-import { DownloadIcon, Trash2Icon } from 'lucide-react'
+import { FileJsonIcon, FileTextIcon, Trash2Icon } from 'lucide-react'
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
@@ -43,19 +43,35 @@ export function DataRightsCard() {
         <CardTitle>{t('settings.data.title')}</CardTitle>
         <CardDescription>{t('settings.data.intro')}</CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-wrap gap-3">
-        <Button
-          variant="outline"
-          disabled={exportData.isPending}
-          onClick={() => {
-            exportData.mutate(undefined, {
-              onError: (error) => toast.error(errorMessage(error)),
-            })
-          }}
-        >
-          <DownloadIcon aria-hidden />
-          {exportData.isPending ? t('settings.data.downloading') : t('settings.data.download')}
-        </Button>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <div className="flex flex-wrap gap-3">
+            {(['html', 'json'] as const).map((format) => {
+              const loading = exportData.isPending && exportData.variables === format
+              return (
+                <Button
+                  key={format}
+                  variant="outline"
+                  className="h-auto min-h-9 whitespace-normal"
+                  disabled={exportData.isPending}
+                  onClick={() => {
+                    exportData.mutate(format, {
+                      onError: (error) => toast.error(errorMessage(error)),
+                    })
+                  }}
+                >
+                  {format === 'html' ? <FileTextIcon aria-hidden /> : <FileJsonIcon aria-hidden />}
+                  {loading
+                    ? t('settings.data.downloading')
+                    : format === 'html'
+                      ? t('settings.data.downloadHtml')
+                      : t('settings.data.downloadJson')}
+                </Button>
+              )
+            })}
+          </div>
+          <p className="text-sm text-muted-foreground">{t('settings.data.downloadHint')}</p>
+        </div>
         <DeleteAccountDialog />
       </CardContent>
     </Card>

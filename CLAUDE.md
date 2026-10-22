@@ -59,7 +59,10 @@ renderApp helper
 - 403 `consent_required` from any call -> ApiClientProvider refetches consents and navigates to
   /consents (global, no per-screen handling).
 - Data rights (backend ADR 0006, /settings "Your data"): `api.download()` for GET /me/export
-  (Blob + temporary object URL, name from Content-Disposition, else hair-chat-export.json);
+  (Blob + temporary object URL, name from Content-Disposition, else hair-chat-export.json).
+  "To read" = the same JSON rendered here (features/me/exportHtml.ts, ExportDocument.tsx) with
+  react-dom/server to one self-contained HTML file in the UI language: data only as React text
+  or through <Markdown>, never as raw HTML; react-dom/server stays a lazy chunk (vite.config.ts).
   DELETE /me always sends `{confirm: "DELETE"}` (the UI word is localized). After 204 use
   `useEndSession('/login?deleted=1')`: `api.endSession()` blocks every later call (the backend
   recreates a user from a still-valid token), cache cleared, Auth0 logout. That returnTo must be

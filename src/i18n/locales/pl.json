@@ -128,7 +128,6 @@
     "data": {
       "title": "Twoje dane",
       "intro": "Pobierz kopię wszystkiego, co o tobie przechowujemy, albo usuń konto.",
-      "download": "Pobierz moje dane",
       "downloading": "Przygotowujemy plik…",
       "delete": "Usuń konto",
       "deleteTitle": "Usunąć konto?",
@@ -137,7 +136,10 @@
       "deleteExportFirst": "Jeśli chcesz zachować kopię, najpierw pobierz swoje dane.",
       "confirmWord": "USUŃ",
       "confirmLabel": "Aby potwierdzić, wpisz {{word}}",
-      "deleteConfirm": "Usuń na zawsze"
+      "deleteConfirm": "Usuń na zawsze",
+      "downloadHtml": "Pobierz do czytania",
+      "downloadJson": "Pobierz do przeniesienia (JSON)",
+      "downloadHint": "„Do czytania” to strona, którą otworzysz w przeglądarce lub wydrukujesz. JSON to pełne dane w formacie do odczytu maszynowego, do przeniesienia do innej usługi."
     }
   },
   "safety": {
@@ -150,5 +152,29 @@
       "emergency": "numer alarmowy, gdy zagrożone jest twoje życie lub życie innej osoby",
       "findAHelpline": "bezpłatne telefony wsparcia w twoim kraju"
     }
+  },
+  "export": {
+    "title": "Hair Chat — twoje dane",
+    "exportedAt": "Wyeksportowano {{date}}",
+    "profile": "Profil",
+    "fields": {
+      "id": "ID konta",
+      "signInId": "ID logowania",
+      "email": "E-mail",
+      "name": "Imię",
+      "language": "Język",
+      "role": "Rola",
+      "createdAt": "Konto utworzone",
+      "ageConfirmedAt": "Wiek potwierdzony"
+    },
+    "consents": "Zgody",
+    "consentType": "Zgoda",
+    "consentVersion": "Wersja",
+    "grantedAt": "Udzielona",
+    "revokedAt": "Wycofana",
+    "conversations": "Rozmowy ({{total}})",
+    "conversationDates": "Rozpoczęta {{created}} · ostatnia wiadomość {{last}}",
+    "summary": "Podsumowanie wcześniejszych wiadomości",
+    "none": "Brak."
   }
 }

@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw'
 
 import { CONSENT_TYPES, CONSENT_VERSION } from '@/consents'
 import type {
+  AccountExport,
   ConsentItem,
   ConsentType,
   ConsentsResponse,
@@ -80,6 +81,60 @@ export function consentsHandlers(initial = consentsFixture()) {
   ]
 }
 
+/** GET /me/export body (backend AccountExport). */
+export function exportFixture(overrides: Partial<AccountExport> = {}): AccountExport {
+  return {
+    format_version: 1,
+    exported_at: '2026-10-22T12:00:00Z',
+    user: {
+      id: meFixture.id,
+      auth_sub: 'google-oauth2|123',
+      email: null,
+      display_name: null,
+      locale: 'en',
+      role: 'user',
+      created_at: meFixture.created_at,
+      age_confirmed_at: GRANTED_AT,
+    },
+    consents: CONSENT_TYPES.map((type) => ({
+      type,
+      version: CONSENT_VERSION,
+      granted_at: GRANTED_AT,
+      revoked_at: null,
+    })),
+    conversations: [
+      {
+        id: 'c-export-1',
+        title: 'Oily scalp',
+        summary: null,
+        created_at: '2026-10-20T10:00:00Z',
+        last_message_at: '2026-10-20T10:01:00Z',
+        messages: [
+          {
+            id: 'm-1',
+            role: 'user',
+            content: 'How often should I wash oily hair?',
+            created_at: '2026-10-20T10:00:00Z',
+            provider: null,
+            model: null,
+            moderation: 'allow',
+          },
+          {
+            id: 'm-2',
+            role: 'assistant',
+            content: 'Usually **every 1–2 days** with a mild shampoo.',
+            created_at: '2026-10-20T10:01:00Z',
+            provider: 'gemini',
+            model: 'gemini-test',
+            moderation: null,
+          },
+        ],
+      },
+    ],
+    ...overrides,
+  }
+}
+
 /** The chat fake of the current test (recreated by defaultHandlers before each test). */
 export let chatFake: ChatFake = createChatFake()
 
@@ -93,20 +148,11 @@ export const defaultHandlers = () => {
       return HttpResponse.json({ ...meFixture, locale: body.locale })
     }),
     http.get(`${API}/me/export`, () =>
-      HttpResponse.json(
-        {
-          format_version: 1,
-          exported_at: '2026-10-22T12:00:00Z',
-          user: meFixture,
-          consents: [],
-          conversations: [],
+      HttpResponse.json(exportFixture(), {
+        headers: {
+          'Content-Disposition': 'attachment; filename="hair-chat-export-2026-10-22.json"',
         },
-        {
-          headers: {
-            'Content-Disposition': 'attachment; filename="hair-chat-export-2026-10-22.json"',
-          },
-        },
-      ),
+      }),
     ),
     http.delete(`${API}/me`, async ({ request }) => {
       const body = (await request.json()) as Partial<DeleteMeRequest> | null

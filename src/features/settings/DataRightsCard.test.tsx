@@ -70,7 +70,7 @@ describe('download my data', () => {
     const requests = recordRequests()
     const user = await openSettings()
 
-    await user.click(screen.getByRole('button', { name: 'Download my data' }))
+    await user.click(screen.getByRole('button', { name: 'Download for transfer (JSON)' }))
 
     await waitFor(() => {
       expect(downloads).toHaveLength(1)
@@ -90,7 +90,7 @@ describe('download my data', () => {
     server.use(http.get(`${API}/me/export`, () => HttpResponse.json({ format_version: 1 })))
     const user = await openSettings()
 
-    await user.click(screen.getByRole('button', { name: 'Download my data' }))
+    await user.click(screen.getByRole('button', { name: 'Download for transfer (JSON)' }))
 
     await waitFor(() => {
       expect(downloads[0]?.filename).toBe('hair-chat-export.json')
@@ -114,14 +114,41 @@ describe('download my data', () => {
     const user = userEvent.setup()
     renderApp('/settings')
 
-    await user.click(await screen.findByRole('button', { name: 'Pobierz moje dane' }))
+    await user.click(await screen.findByRole('button', { name: 'Pobierz do przeniesienia (JSON)' }))
     expect(await screen.findByRole('button', { name: 'Przygotowujemy plik…' })).toBeDisabled()
     release()
 
     expect(await screen.findByText('Błąd serwera. Spróbuj później.')).toBeInTheDocument()
     expect(screen.queryByText('boom')).not.toBeInTheDocument()
-    expect(screen.getByRole('button', { name: 'Pobierz moje dane' })).toBeEnabled()
+    expect(screen.getByRole('button', { name: 'Pobierz do przeniesienia (JSON)' })).toBeEnabled()
     expect(downloads).toHaveLength(0)
+  })
+})
+
+describe('download to read (HTML)', () => {
+  it('builds an HTML file from the export with the conversations, in the UI language', async () => {
+    const { downloads } = captureDownloads()
+    const requests = recordRequests()
+    const user = await openSettings()
+
+    await user.click(screen.getByRole('button', { name: 'Download to read' }))
+
+    await waitFor(() => {
+      expect(downloads).toHaveLength(1)
+    })
+    const file = downloads[0] as { filename: string; blob: Blob }
+    expect(file.filename).toBe('hair-chat-export-2026-10-22.html')
+    expect(file.blob.type).toBe('text/html;charset=utf-8')
+    const html = await file.blob.text()
+    expect(html).toMatch(/^<!doctype html>/)
+    expect(html).toContain('<html lang="en">')
+    expect(html).toContain('Oily scalp')
+    expect(html).toContain('How often should I wash oily hair?')
+    expect(html).toContain('<strong>every 1–2 days</strong>')
+    expect(requests.find((r) => r.path === '/api/me/export')?.auth).toBe('Bearer test-token')
+    expect(
+      screen.getByText(/“To read” is a page you can open in a browser or print/),
+    ).toBeInTheDocument()
   })
 })
 

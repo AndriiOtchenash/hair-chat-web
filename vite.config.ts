@@ -21,7 +21,14 @@ export default defineConfig({
           groups: [
             {
               name: 'react',
-              test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/,
+              // Not react-dom/server: see the next group.
+              test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/](?!server|cjs[\\/]react-dom-server)/,
+            },
+            // Only the readable data export (features/me/exportHtml.ts) renders React to a
+            // string: react-dom/server gets its own chunk, loaded on demand.
+            {
+              name: 'react-dom-server',
+              test: /node_modules[\\/]react-dom[\\/](server|cjs[\\/]react-dom-server)/,
             },
             { name: 'auth0', test: /node_modules[\\/]@auth0[\\/]/ },
             { name: 'ui', test: /node_modules[\\/](radix-ui|@radix-ui|lucide-react)[\\/]/ },
