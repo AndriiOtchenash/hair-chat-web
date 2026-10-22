@@ -25,7 +25,7 @@ describe('LoginPage', () => {
   it('sends signed-in users from /login to the chat', async () => {
     const { router } = renderApp('/login')
 
-    expect(await screen.findByText('The chat will be here soon.')).toBeInTheDocument()
+    expect(await screen.findByText('Choose a conversation or start a new one.')).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/chat')
   })
 

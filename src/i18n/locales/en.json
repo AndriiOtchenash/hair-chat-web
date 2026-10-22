@@ -52,7 +52,12 @@
     "network_error": "Cannot reach the server. Check your connection.",
     "bad_response": "The server returned an unexpected response.",
     "unknown": "Unexpected error. Please try again.",
-    "consent_version_mismatch": "The consent texts have changed. Reload the page to see the current version."
+    "consent_version_mismatch": "The consent texts have changed. Reload the page to see the current version.",
+    "conversation_busy": "An answer is still being written in this conversation. Wait for it to finish and try again.",
+    "message_blocked": "This message was not sent because it breaks the usage rules. Please rephrase it.",
+    "llm_not_configured": "The assistant is not available right now. Please try again later.",
+    "llm_unavailable": "The assistant is temporarily unavailable. Your message is saved; please try again in a few minutes.",
+    "llm_request_rejected": "The assistant could not answer this message. Your message is saved; try rephrasing it."
   },
   "nav": {
     "chat": "Chat",
@@ -61,7 +66,32 @@
   },
   "chat": {
     "title": "Chat",
-    "comingSoon": "The chat will be here soon."
+    "conversations": "Conversations",
+    "conversationsHint": "Choose a conversation or start a new one.",
+    "newConversation": "New conversation",
+    "untitled": "New conversation",
+    "noConversations": "No conversations yet.",
+    "loadMore": "Show more",
+    "pickOrStart": "Choose a conversation or start a new one.",
+    "notFound": "This conversation was not found. It may have been deleted.",
+    "messages": "Messages",
+    "emptyConversation": "Ask your first question about hair care.",
+    "loadOlder": "Load older messages",
+    "you": "You",
+    "assistant": "Assistant",
+    "inputLabel": "Message",
+    "inputPlaceholder": "Ask about hair care…",
+    "counter": "{{length}} / {{max}}",
+    "send": "Send",
+    "stop": "Stop",
+    "typing": "The assistant is typing…",
+    "switchingModel": "Switching to the backup model, the answer starts again…",
+    "truncated": "The answer was cut short. Ask to continue if you need more.",
+    "sources": "Sources",
+    "errors": {
+      "validation": "The message must be from 1 to 4000 characters long."
+    },
+    "closePanel": "Close the list"
   },
   "consents": {
     "title": "Before we start",
@@ -92,5 +122,16 @@
     "revokeConfirm": "Withdraw",
     "cancel": "Cancel",
     "revoked": "Consent withdrawn."
+  },
+  "safety": {
+    "title": "You are not alone",
+    "text": "It sounds like you might be going through something really hard. You deserve support, and talking to someone can help. These services are free and confidential:",
+    "dismiss": "Close the help card",
+    "lines": {
+      "emotionalCrisis": "helpline for adults in emotional crisis (Poland)",
+      "lifelineUkraine": "Lifeline Ukraine, suicide prevention and mental health support",
+      "emergency": "emergency number if your life or someone else’s is in danger",
+      "findAHelpline": "free helplines in your country"
+    }
   }
 }

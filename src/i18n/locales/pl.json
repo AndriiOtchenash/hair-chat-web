@@ -52,7 +52,12 @@
     "network_error": "Brak połączenia z serwerem. Sprawdź połączenie.",
     "bad_response": "Serwer zwrócił nieoczekiwaną odpowiedź.",
     "unknown": "Nieoczekiwany błąd. Spróbuj ponownie.",
-    "consent_version_mismatch": "Teksty zgód się zmieniły. Odśwież stronę, aby zobaczyć aktualną wersję."
+    "consent_version_mismatch": "Teksty zgód się zmieniły. Odśwież stronę, aby zobaczyć aktualną wersję.",
+    "conversation_busy": "W tej rozmowie wciąż powstaje odpowiedź. Poczekaj, aż się zakończy, i spróbuj ponownie.",
+    "message_blocked": "Wiadomość nie została wysłana, ponieważ narusza zasady korzystania. Sformułuj ją inaczej.",
+    "llm_not_configured": "Asystent jest teraz niedostępny. Spróbuj później.",
+    "llm_unavailable": "Asystent jest chwilowo niedostępny. Twoja wiadomość została zapisana; spróbuj za kilka minut.",
+    "llm_request_rejected": "Asystent nie mógł odpowiedzieć na tę wiadomość. Została zapisana; spróbuj ją przeformułować."
   },
   "nav": {
     "chat": "Czat",
@@ -61,7 +66,32 @@
   },
   "chat": {
     "title": "Czat",
-    "comingSoon": "Wkrótce będzie tu czat."
+    "conversations": "Rozmowy",
+    "conversationsHint": "Wybierz rozmowę albo zacznij nową.",
+    "newConversation": "Nowa rozmowa",
+    "untitled": "Nowa rozmowa",
+    "noConversations": "Nie masz jeszcze rozmów.",
+    "loadMore": "Pokaż więcej",
+    "pickOrStart": "Wybierz rozmowę albo zacznij nową.",
+    "notFound": "Nie znaleziono tej rozmowy. Mogła zostać usunięta.",
+    "messages": "Wiadomości",
+    "emptyConversation": "Zadaj pierwsze pytanie o pielęgnację włosów.",
+    "loadOlder": "Wczytaj starsze wiadomości",
+    "you": "Ty",
+    "assistant": "Asystent",
+    "inputLabel": "Wiadomość",
+    "inputPlaceholder": "Zapytaj o pielęgnację włosów…",
+    "counter": "{{length}} / {{max}}",
+    "send": "Wyślij",
+    "stop": "Stop",
+    "typing": "Asystent pisze…",
+    "switchingModel": "Przełączamy się na model zapasowy, odpowiedź zacznie się od nowa…",
+    "truncated": "Odpowiedź została ucięta. Poproś o kontynuację, jeśli potrzebujesz więcej.",
+    "sources": "Źródła",
+    "errors": {
+      "validation": "Wiadomość musi mieć od 1 do 4000 znaków."
+    },
+    "closePanel": "Zamknij listę"
   },
   "consents": {
     "title": "Zanim zaczniemy",
@@ -92,5 +122,16 @@
     "revokeConfirm": "Wycofaj",
     "cancel": "Anuluj",
     "revoked": "Zgoda wycofana."
+  },
+  "safety": {
+    "title": "Nie jesteś sam(a)",
+    "text": "Wygląda na to, że przechodzisz przez coś bardzo trudnego. Zasługujesz na wsparcie, a rozmowa z kimś może pomóc. Te usługi są bezpłatne i poufne:",
+    "dismiss": "Zamknij kartę pomocy",
+    "lines": {
+      "emotionalCrisis": "telefon zaufania dla dorosłych w kryzysie emocjonalnym",
+      "lifelineUkraine": "Lifeline Ukraine, zapobieganie samobójstwom i wsparcie psychologiczne (Ukraina)",
+      "emergency": "numer alarmowy, gdy zagrożone jest twoje życie lub życie innej osoby",
+      "findAHelpline": "bezpłatne telefony wsparcia w twoim kraju"
+    }
   }
 }

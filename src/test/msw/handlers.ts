@@ -10,7 +10,10 @@ import type {
   UpdateMeRequest,
 } from '@/shared/api/types'
 
-export const API = 'http://localhost/api'
+import { API } from './api'
+import { chatHandlers, createChatFake, type ChatFake } from './chat'
+
+export { API }
 
 export const meFixture: MeResponse = {
   id: '01929b2e-7c4a-7d3e-9f00-123456789abc',
@@ -76,12 +79,19 @@ export function consentsHandlers(initial = consentsFixture()) {
   ]
 }
 
-/** Fresh handlers (new consent state) for every test: see setup.ts. */
-export const defaultHandlers = () => [
-  http.get(`${API}/me`, () => HttpResponse.json(meFixture)),
-  http.patch(`${API}/me`, async ({ request }) => {
-    const body = (await request.json()) as UpdateMeRequest
-    return HttpResponse.json({ ...meFixture, locale: body.locale })
-  }),
-  ...consentsHandlers(),
-]
+/** The chat fake of the current test (recreated by defaultHandlers before each test). */
+export let chatFake: ChatFake = createChatFake()
+
+/** Fresh handlers (new consent and chat state) for every test: see setup.ts. */
+export const defaultHandlers = () => {
+  chatFake = createChatFake()
+  return [
+    http.get(`${API}/me`, () => HttpResponse.json(meFixture)),
+    http.patch(`${API}/me`, async ({ request }) => {
+      const body = (await request.json()) as UpdateMeRequest
+      return HttpResponse.json({ ...meFixture, locale: body.locale })
+    }),
+    ...consentsHandlers(),
+    ...chatHandlers(chatFake),
+  ]
+}
