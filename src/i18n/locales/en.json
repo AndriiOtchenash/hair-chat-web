@@ -16,7 +16,9 @@
       "missing_transaction": "The sign-in attempt expired. Please try again.",
       "state_mismatch": "The sign-in attempt expired. Please try again.",
       "unknown": "Sign-in failed. Please try again."
-    }
+    },
+    "accountDeleted": "Account deleted",
+    "accountDeletedText": "Your profile, conversations and consents have been deleted. You can sign in again at any time to start over."
   },
   "language": {
     "label": "Language",
@@ -121,7 +123,22 @@
     "revokeText": "Without this consent the chat becomes unavailable until you accept it again. Withdrawing does not delete your data; data deletion is a separate request.",
     "revokeConfirm": "Withdraw",
     "cancel": "Cancel",
-    "revoked": "Consent withdrawn."
+    "revoked": "Consent withdrawn.",
+    "revokeDataHint": "To delete your data, see the <anchor>Your data</anchor> section.",
+    "data": {
+      "title": "Your data",
+      "intro": "Download a copy of everything we store about you, or delete your account.",
+      "download": "Download my data",
+      "downloading": "Preparing the file…",
+      "delete": "Delete account",
+      "deleteTitle": "Delete your account?",
+      "deleteWhat": "We will delete your profile, all your conversations and your consents.",
+      "deleteIrreversible": "This cannot be undone: deleted data cannot be restored.",
+      "deleteExportFirst": "If you want to keep a copy, download your data first.",
+      "confirmWord": "DELETE",
+      "confirmLabel": "To confirm, type {{word}}",
+      "deleteConfirm": "Delete forever"
+    }
   },
   "safety": {
     "title": "You are not alone",

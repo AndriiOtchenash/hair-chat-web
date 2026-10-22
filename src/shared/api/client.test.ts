@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { API } from '@/test/msw/handlers'
 import { server } from '@/test/msw/server'
 
-import { createApiClient } from './client'
+import { createApiClient, filenameFromDisposition } from './client'
 import { ApiError } from './errors'
 
 function makeClient(getToken = () => Promise.resolve('tok-123')) {
@@ -202,5 +202,75 @@ describe('createApiClient stream', () => {
     await expect(
       client.stream(PATH, { content: 'Hi' }, controller.signal),
     ).rejects.not.toBeInstanceOf(ApiError)
+  })
+})
+
+describe('createApiClient data rights', () => {
+  it('sends a JSON body with DELETE', async () => {
+    let body: unknown = null
+    server.use(
+      http.delete(`${API}/me`, async ({ request }) => {
+        body = await request.json()
+        return new HttpResponse(null, { status: 204 })
+      }),
+    )
+    const { client } = makeClient()
+
+    await expect(client.delete('/me', { confirm: 'DELETE' })).resolves.toBeUndefined()
+    expect(body).toEqual({ confirm: 'DELETE' })
+  })
+
+  it('downloads a file with the Bearer token and the Content-Disposition name', async () => {
+    let authorization: string | null = null
+    server.use(
+      http.get(`${API}/me/export`, ({ request }) => {
+        authorization = request.headers.get('Authorization')
+        return new HttpResponse('{"a":1}', {
+          headers: {
+            'Content-Type': 'application/json',
+            'Content-Disposition': 'attachment; filename="export.json"',
+          },
+        })
+      }),
+    )
+    const { client } = makeClient()
+
+    const { blob, filename } = await client.download('/me/export')
+    expect(authorization).toBe('Bearer tok-123')
+    expect(filename).toBe('export.json')
+    expect(await blob.text()).toBe('{"a":1}')
+  })
+
+  it('makes no network call once the session has ended', async () => {
+    const hit = vi.fn()
+    server.use(
+      http.get(`${API}/me`, () => {
+        hit()
+        return HttpResponse.json({})
+      }),
+    )
+    const { client, onUnauthorized } = makeClient()
+    client.endSession()
+
+    await expect(client.get('/me')).rejects.toMatchObject({ code: 'not_authenticated' })
+    expect(hit).not.toHaveBeenCalled()
+    expect(onUnauthorized).not.toHaveBeenCalled()
+  })
+})
+
+describe('filenameFromDisposition', () => {
+  it.each([
+    [null, null],
+    ['attachment', null],
+    ['attachment; filename="a b.json"', 'a b.json'],
+    ['attachment; filename=plain.json', 'plain.json'],
+    [
+      'attachment; filename="x.json"; filename*=UTF-8\'\'%D0%B4%D0%B0%D0%BD%D1%96.json',
+      'дані.json',
+    ],
+    ['attachment; filename="../../etc/passwd"', 'passwd'],
+    ['attachment; filename="C:\\\\Windows\\\\x.json"', 'x.json'],
+  ])('%s -> %s', (header, expected) => {
+    expect(filenameFromDisposition(header)).toBe(expected)
   })
 })

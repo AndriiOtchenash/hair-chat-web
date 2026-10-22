@@ -16,7 +16,9 @@
       "missing_transaction": "Próba logowania wygasła. Spróbuj ponownie.",
       "state_mismatch": "Próba logowania wygasła. Spróbuj ponownie.",
       "unknown": "Nie udało się zalogować. Spróbuj ponownie."
-    }
+    },
+    "accountDeleted": "Konto zostało usunięte",
+    "accountDeletedText": "Twój profil, rozmowy i zgody zostały usunięte. W każdej chwili możesz zalogować się ponownie i zacząć od nowa."
   },
   "language": {
     "label": "Język",
@@ -121,7 +123,22 @@
     "revokeText": "Bez tej zgody czat będzie niedostępny, dopóki nie zaakceptujesz jej ponownie. Wycofanie nie usuwa Twoich danych; usunięcie danych to osobne żądanie.",
     "revokeConfirm": "Wycofaj",
     "cancel": "Anuluj",
-    "revoked": "Zgoda wycofana."
+    "revoked": "Zgoda wycofana.",
+    "revokeDataHint": "Aby usunąć swoje dane, przejdź do sekcji <anchor>Twoje dane</anchor>.",
+    "data": {
+      "title": "Twoje dane",
+      "intro": "Pobierz kopię wszystkiego, co o tobie przechowujemy, albo usuń konto.",
+      "download": "Pobierz moje dane",
+      "downloading": "Przygotowujemy plik…",
+      "delete": "Usuń konto",
+      "deleteTitle": "Usunąć konto?",
+      "deleteWhat": "Usuniemy twój profil, wszystkie rozmowy i zgody.",
+      "deleteIrreversible": "Tej operacji nie można cofnąć: usuniętych danych nie da się odzyskać.",
+      "deleteExportFirst": "Jeśli chcesz zachować kopię, najpierw pobierz swoje dane.",
+      "confirmWord": "USUŃ",
+      "confirmLabel": "Aby potwierdzić, wpisz {{word}}",
+      "deleteConfirm": "Usuń na zawsze"
+    }
   },
   "safety": {
     "title": "Nie jesteś sam(a)",

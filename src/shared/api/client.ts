@@ -16,7 +16,16 @@ export interface ApiClient {
   get<T>(path: string): Promise<T>
   post<T>(path: string, body: unknown): Promise<T>
   patch<T>(path: string, body: unknown): Promise<T>
-  delete(path: string): Promise<void>
+  /** DELETE, optionally with a JSON body (DELETE /me {confirm}). */
+  delete(path: string, body?: unknown): Promise<void>
+  /** GET a file (attachment): the body as a Blob and the name from Content-Disposition, if any. */
+  download(path: string): Promise<{ blob: Blob; filename: string | null }>
+  /**
+   * The session is over (account deleted, signing out): every later call is rejected without
+   * reaching the network. Our backend creates a user on first sight of a valid token, so a single
+   * request after DELETE /me would bring the account back.
+   */
+  endSession(): void
   /**
    * POST that answers with a stream (SSE): resolves with the 2xx Response once headers arrive;
    * errors before the stream (4xx/5xx) are thrown as ApiError like any other call.
@@ -26,8 +35,10 @@ export interface ApiClient {
 
 export function createApiClient(options: ApiClientOptions): ApiClient {
   const doFetch = options.fetch ?? ((...args: Parameters<typeof fetch>) => fetch(...args))
+  let ended = false
 
   async function send(path: string, init: RequestInit, accept: string): Promise<Response> {
+    if (ended) throw new ApiError(401, 'not_authenticated', 'Session ended')
     let token: string
     try {
       token = await options.getToken()
@@ -77,8 +88,45 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       request<T>(path, { method: 'POST', body: JSON.stringify(body) }),
     patch: <T>(path: string, body: unknown) =>
       request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
-    delete: (path: string) => request<undefined>(path, { method: 'DELETE' }),
+    delete: (path: string, body?: unknown) =>
+      request<undefined>(path, {
+        method: 'DELETE',
+        body: body === undefined ? undefined : JSON.stringify(body),
+      }),
+    download: async (path: string) => {
+      const response = await send(path, { method: 'GET' }, '*/*')
+      return {
+        blob: await response.blob(),
+        filename: filenameFromDisposition(response.headers.get('Content-Disposition')),
+      }
+    },
+    endSession: () => {
+      ended = true
+    },
     stream: (path: string, body: unknown, signal?: AbortSignal) =>
       send(path, { method: 'POST', body: JSON.stringify(body), signal }, 'text/event-stream'),
   }
+}
+
+/**
+ * File name from a Content-Disposition header: RFC 5987 `filename*=UTF-8''…` wins over
+ * `filename="…"`. Path parts are dropped so a name can never point outside the download folder.
+ */
+export function filenameFromDisposition(header: string | null): string | null {
+  if (!header) return null
+  let name: string | null = null
+  const extended = /filename\*\s*=\s*(?:UTF-8|utf-8)''([^;]+)/.exec(header)
+  if (extended?.[1]) {
+    try {
+      name = decodeURIComponent(extended[1].trim())
+    } catch {
+      name = null
+    }
+  }
+  if (!name) {
+    const plain = /filename\s*=\s*(?:"([^"]*)"|([^;]+))/.exec(header)
+    name = (plain?.[1] ?? plain?.[2])?.trim() ?? null
+  }
+  const base = name?.split(/[\\/]/).pop()?.trim()
+  return base ? base : null
 }

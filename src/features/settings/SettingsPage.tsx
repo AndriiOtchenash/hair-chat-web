@@ -1,4 +1,5 @@
-import { useTranslation } from 'react-i18next'
+import { useRef, useState, type ReactNode } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { Link } from 'react-router'
 import { toast } from 'sonner'
 
@@ -27,6 +28,8 @@ import { LANGUAGE_NAMES, SUPPORTED_LANGUAGES, currentLanguage } from '@/i18n'
 import type { ConsentItem, ConsentType } from '@/shared/api/types'
 import { useErrorMessage } from '@/shared/api/useErrorMessage'
 
+import { DATA_RIGHTS_ID, DataRightsCard } from './DataRightsCard'
+
 export function SettingsPage() {
   const { t } = useTranslation()
   return (
@@ -35,6 +38,7 @@ export function SettingsPage() {
       <LanguageCard />
       <ConsentsCard />
       <AccountCard />
+      <DataRightsCard />
     </div>
   )
 }
@@ -115,6 +119,9 @@ function ConsentRow({ type, item }: { type: ConsentType; item: ConsentItem | und
   const revoke = useRevokeConsent()
   const errorMessage = useErrorMessage()
   const title = texts[type].title
+  const [dialogOpen, setDialogOpen] = useState(false)
+  /** The "Your data" link was used: on close, go to that card instead of back to the trigger. */
+  const jumpToDataRef = useRef(false)
 
   let status
   if (item?.granted && item.granted_at) {
@@ -147,18 +154,46 @@ function ConsentRow({ type, item }: { type: ConsentType; item: ConsentItem | und
         {status}
       </div>
       {item?.version && (
-        <AlertDialog>
+        <AlertDialog open={dialogOpen} onOpenChange={setDialogOpen}>
           <AlertDialogTrigger asChild>
             <Button variant="outline" size="sm" disabled={revoke.isPending}>
               {t('settings.revoke')}
             </Button>
           </AlertDialogTrigger>
-          <AlertDialogContent>
+          <AlertDialogContent
+            onCloseAutoFocus={(event) => {
+              if (!jumpToDataRef.current) return
+              jumpToDataRef.current = false
+              event.preventDefault()
+              const card = document.getElementById(DATA_RIGHTS_ID)
+              card?.scrollIntoView({ block: 'start' })
+              card?.focus({ preventScroll: true })
+            }}
+          >
             <AlertDialogHeader>
               <AlertDialogTitle>{t('settings.revokeTitle')}</AlertDialogTitle>
-              <AlertDialogDescription>
-                <strong className="block text-foreground">{title}</strong>
-                {t('settings.revokeText')}
+              <AlertDialogDescription asChild>
+                <div className="space-y-2">
+                  <p>
+                    <strong className="block text-foreground">{title}</strong>
+                    {t('settings.revokeText')}
+                  </p>
+                  <p>
+                    <Trans
+                      i18nKey="settings.revokeDataHint"
+                      components={{
+                        anchor: (
+                          <DataSectionLink
+                            onJump={() => {
+                              jumpToDataRef.current = true
+                              setDialogOpen(false)
+                            }}
+                          />
+                        ),
+                      }}
+                    />
+                  </p>
+                </div>
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
@@ -179,6 +214,22 @@ function ConsentRow({ type, item }: { type: ConsentType; item: ConsentItem | und
         </AlertDialog>
       )}
     </li>
+  )
+}
+
+/** In-page link to the "Your data" card (closes the dialog first, see onCloseAutoFocus). */
+function DataSectionLink({ onJump, children }: { onJump: () => void; children?: ReactNode }) {
+  return (
+    <a
+      href={`#${DATA_RIGHTS_ID}`}
+      className="font-medium text-foreground underline underline-offset-4"
+      onClick={(event) => {
+        event.preventDefault()
+        onJump()
+      }}
+    >
+      {children}
+    </a>
   )
 }
 

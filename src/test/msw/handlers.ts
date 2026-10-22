@@ -5,6 +5,7 @@ import type {
   ConsentItem,
   ConsentType,
   ConsentsResponse,
+  DeleteMeRequest,
   GrantConsentsRequest,
   MeResponse,
   UpdateMeRequest,
@@ -90,6 +91,32 @@ export const defaultHandlers = () => {
     http.patch(`${API}/me`, async ({ request }) => {
       const body = (await request.json()) as UpdateMeRequest
       return HttpResponse.json({ ...meFixture, locale: body.locale })
+    }),
+    http.get(`${API}/me/export`, () =>
+      HttpResponse.json(
+        {
+          format_version: 1,
+          exported_at: '2026-10-22T12:00:00Z',
+          user: meFixture,
+          consents: [],
+          conversations: [],
+        },
+        {
+          headers: {
+            'Content-Disposition': 'attachment; filename="hair-chat-export-2026-10-22.json"',
+          },
+        },
+      ),
+    ),
+    http.delete(`${API}/me`, async ({ request }) => {
+      const body = (await request.json()) as Partial<DeleteMeRequest> | null
+      if (body?.confirm !== 'DELETE') {
+        return HttpResponse.json(
+          { code: 'validation_error', message: 'body.confirm: invalid' },
+          { status: 422 },
+        )
+      }
+      return new HttpResponse(null, { status: 204 })
     }),
     ...consentsHandlers(),
     ...chatHandlers(chatFake),

@@ -58,6 +58,12 @@ renderApp helper
   `answerMeta`), so they show for answers streamed in this session.
 - 403 `consent_required` from any call -> ApiClientProvider refetches consents and navigates to
   /consents (global, no per-screen handling).
+- Data rights (backend ADR 0006, /settings "Your data"): `api.download()` for GET /me/export
+  (Blob + temporary object URL, name from Content-Disposition, else hair-chat-export.json);
+  DELETE /me always sends `{confirm: "DELETE"}` (the UI word is localized). After 204 use
+  `useEndSession('/login?deleted=1')`: `api.endSession()` blocks every later call (the backend
+  recreates a user from a still-valid token), cache cleared, Auth0 logout. That returnTo must be
+  in Auth0 Allowed Logout URLs.
 
 ## Routes and consents
 
