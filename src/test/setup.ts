@@ -13,6 +13,9 @@ vi.mock('@auth0/auth0-react', () => ({
   Auth0Provider: ({ children }: { children: unknown }) => children,
 }))
 
+// jsdom has no layout: scrolling is a no-op.
+Element.prototype.scrollIntoView = () => undefined
+
 // Any request without a handler fails the test: no real network in tests.
 beforeAll(() => {
   server.listen({ onUnhandledFrame: 'error' })

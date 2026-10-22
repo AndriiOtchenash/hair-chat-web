@@ -1,9 +1,9 @@
 import { useAuth0 } from '@auth0/auth0-react'
-import { AlertCircleIcon } from 'lucide-react'
+import { AlertCircleIcon, CircleCheckIcon } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { Navigate } from 'react-router'
+import { Navigate, useSearchParams } from 'react-router'
 
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 
@@ -16,6 +16,9 @@ export function LoginPage() {
   const { t } = useTranslation()
   const { isAuthenticated, loginWithRedirect } = useAuth0()
   const loginError = useLoginError()
+  // Auth0 logout after DELETE /me returns here (ACCOUNT_DELETED_PATH).
+  const [searchParams] = useSearchParams()
+  const accountDeleted = searchParams.get('deleted') === '1'
 
   if (isAuthenticated) return <Navigate to="/" replace />
 
@@ -26,6 +29,13 @@ export function LoginPage() {
         <CardDescription>{t('auth.signInHint')}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
+        {accountDeleted && (
+          <Alert>
+            <CircleCheckIcon aria-hidden />
+            <AlertTitle>{t('auth.accountDeleted')}</AlertTitle>
+            <AlertDescription>{t('auth.accountDeletedText')}</AlertDescription>
+          </Alert>
+        )}
         {loginError && (
           <Alert variant="destructive">
             <AlertCircleIcon aria-hidden />

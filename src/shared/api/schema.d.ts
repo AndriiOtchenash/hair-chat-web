@@ -32,11 +32,29 @@ export interface paths {
     get: operations['me_me_get']
     put?: never
     post?: never
-    delete?: never
+    /** Delete Me */
+    delete: operations['delete_me_me_delete']
     options?: never
     head?: never
     /** Update Me */
     patch: operations['update_me_me_patch']
+    trace?: never
+  }
+  '/me/export': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /** Export Me */
+    get: operations['export_me_me_export_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
     trace?: never
   }
   '/consents': {
@@ -122,6 +140,25 @@ export interface paths {
 export type webhooks = Record<string, never>
 export interface components {
   schemas: {
+    /** AccountExport */
+    AccountExport: {
+      /**
+       * Format Version
+       * @default 1
+       * @constant
+       */
+      format_version: 1
+      /**
+       * Exported At
+       * Format: date-time
+       */
+      exported_at: string
+      user: components['schemas']['ExportedUser']
+      /** Consents */
+      consents: components['schemas']['ExportedConsent'][]
+      /** Conversations */
+      conversations: components['schemas']['ExportedConversation'][]
+    }
     /** ConsentItem */
     ConsentItem: {
       type: components['schemas']['ConsentType']
@@ -170,6 +207,96 @@ export interface components {
       items: components['schemas']['ConversationOut'][]
       /** Next Cursor */
       next_cursor: string | null
+    }
+    /** DeleteMeRequest */
+    DeleteMeRequest: {
+      /**
+       * Confirm
+       * @constant
+       */
+      confirm: 'DELETE'
+    }
+    /** ExportedConsent */
+    ExportedConsent: {
+      type: components['schemas']['ConsentType']
+      /** Version */
+      version: string
+      /**
+       * Granted At
+       * Format: date-time
+       */
+      granted_at: string
+      /** Revoked At */
+      revoked_at: string | null
+    }
+    /** ExportedConversation */
+    ExportedConversation: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Title */
+      title: string | null
+      /** Summary */
+      summary: string | null
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /**
+       * Last Message At
+       * Format: date-time
+       */
+      last_message_at: string
+      /** Messages */
+      messages: components['schemas']['ExportedMessage'][]
+    }
+    /** ExportedMessage */
+    ExportedMessage: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      role: components['schemas']['MessageRole']
+      /** Content */
+      content: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Provider */
+      provider: string | null
+      /** Model */
+      model: string | null
+      /** Moderation */
+      moderation: string | null
+    }
+    /** ExportedUser */
+    ExportedUser: {
+      /**
+       * Id
+       * Format: uuid
+       */
+      id: string
+      /** Auth Sub */
+      auth_sub: string
+      /** Email */
+      email: string | null
+      /** Display Name */
+      display_name: string | null
+      locale: components['schemas']['Locale']
+      role: components['schemas']['UserRole']
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Age Confirmed At */
+      age_confirmed_at: string | null
     }
     /** GrantConsentsRequest */
     GrantConsentsRequest: {
@@ -327,6 +454,37 @@ export interface operations {
       }
     }
   }
+  delete_me_me_delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DeleteMeRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   update_me_me_patch: {
     parameters: {
       query?: never
@@ -356,6 +514,26 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  export_me_me_export_get: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description JSON file download */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['AccountExport']
         }
       }
     }

@@ -22,6 +22,22 @@ describe('LoginPage', () => {
     })
   })
 
+  it('says the account was deleted after the logout from DELETE /me', async () => {
+    auth0.isAuthenticated = false
+    renderApp('/login?deleted=1')
+
+    expect(await screen.findByText('Account deleted')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Continue with Google' })).toBeInTheDocument()
+  })
+
+  it('shows no deletion message on a plain /login', async () => {
+    auth0.isAuthenticated = false
+    renderApp('/login')
+
+    await screen.findByRole('button', { name: 'Continue with Google' })
+    expect(screen.queryByText('Account deleted')).not.toBeInTheDocument()
+  })
+
   it('sends signed-in users from /login to the chat', async () => {
     const { router } = renderApp('/login')
 
