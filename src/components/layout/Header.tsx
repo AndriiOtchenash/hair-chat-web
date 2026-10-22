@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import { cn } from '@/lib/utils'
 
 import { LanguageRadioItems, LanguageSwitcher } from './LanguageSwitcher'
 
@@ -25,13 +26,19 @@ function useSignOut() {
   return () => void logout({ logoutParams: { returnTo: window.location.origin } })
 }
 
-export function Header() {
+/** `wide` matches the full-height pages (chat), which are wider than the default max-w-3xl. */
+export function Header({ wide = false }: { wide?: boolean }) {
   const { t } = useTranslation()
   const { isAuthenticated } = useAuth0()
 
   return (
     <header className="border-b">
-      <div className="mx-auto flex h-14 max-w-3xl items-center justify-between gap-4 px-4">
+      <div
+        className={cn(
+          'mx-auto flex h-14 items-center justify-between gap-4 px-4',
+          wide ? 'max-w-5xl' : 'max-w-3xl',
+        )}
+      >
         <span className="min-w-0 truncate font-semibold">{t('app.title')}</span>
         {isAuthenticated ? (
           <>

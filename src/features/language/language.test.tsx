@@ -32,7 +32,7 @@ describe('profile language', () => {
     await user.click(await screen.findByRole('button', { name: 'Language' }))
     await user.click(await screen.findByRole('menuitemradio', { name: 'Polski' }))
 
-    expect(await screen.findByText('Wkrótce będzie tu czat.')).toBeInTheDocument()
+    expect(await screen.findByText('Wybierz rozmowę albo zacznij nową.')).toBeInTheDocument()
     await waitFor(() => {
       expect(patches).toEqual([{ locale: 'pl' }])
     })
@@ -90,7 +90,7 @@ describe('profile language', () => {
     const patches = recordPatches()
     renderApp('/chat')
 
-    expect(await screen.findByText('Незабаром тут буде чат.')).toBeInTheDocument()
+    expect(await screen.findByText('Оберіть бесіду або почніть нову.')).toBeInTheDocument()
     expect(patches).toEqual([])
   })
 

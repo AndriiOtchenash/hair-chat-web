@@ -38,7 +38,7 @@ describe('Header mobile menu', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Menu' }))
     await user.click(await screen.findByRole('menuitemradio', { name: 'Українська' }))
-    expect(await screen.findByText('Незабаром тут буде чат.')).toBeInTheDocument()
+    expect(await screen.findByText('Оберіть бесіду або почніть нову.')).toBeInTheDocument()
 
     await user.click(screen.getByRole('button', { name: 'Меню' }))
     await user.click(await screen.findByRole('menuitem', { name: 'Вийти' }))

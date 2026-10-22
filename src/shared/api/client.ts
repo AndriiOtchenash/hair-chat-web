@@ -17,12 +17,17 @@ export interface ApiClient {
   post<T>(path: string, body: unknown): Promise<T>
   patch<T>(path: string, body: unknown): Promise<T>
   delete(path: string): Promise<void>
+  /**
+   * POST that answers with a stream (SSE): resolves with the 2xx Response once headers arrive;
+   * errors before the stream (4xx/5xx) are thrown as ApiError like any other call.
+   */
+  stream(path: string, body: unknown, signal?: AbortSignal): Promise<Response>
 }
 
 export function createApiClient(options: ApiClientOptions): ApiClient {
   const doFetch = options.fetch ?? ((...args: Parameters<typeof fetch>) => fetch(...args))
 
-  async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+  async function send(path: string, init: RequestInit, accept: string): Promise<Response> {
     let token: string
     try {
       token = await options.getToken()
@@ -33,7 +38,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
 
     const headers = new Headers(init.headers)
     headers.set('Authorization', `Bearer ${token}`)
-    headers.set('Accept', 'application/json')
+    headers.set('Accept', accept)
     if (init.body !== undefined && !headers.has('Content-Type')) {
       headers.set('Content-Type', 'application/json')
     }
@@ -42,7 +47,9 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     try {
       response = await doFetch(`${options.baseUrl}${path}`, { ...init, headers })
     } catch (cause) {
-      if (cause instanceof DOMException && cause.name === 'AbortError') throw cause
+      if (init.signal?.aborted || (cause instanceof DOMException && cause.name === 'AbortError')) {
+        throw cause
+      }
       throw new ApiError(0, CLIENT_ERROR_CODES.network, 'Network request failed')
     }
 
@@ -54,6 +61,11 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
       }
       throw error
     }
+    return response
+  }
+
+  async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    const response = await send(path, init, 'application/json')
     if (response.status === 204) return undefined as T
     return (await response.json()) as T
   }
@@ -66,5 +78,7 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     patch: <T>(path: string, body: unknown) =>
       request<T>(path, { method: 'PATCH', body: JSON.stringify(body) }),
     delete: (path: string) => request<undefined>(path, { method: 'DELETE' }),
+    stream: (path: string, body: unknown, signal?: AbortSignal) =>
+      send(path, { method: 'POST', body: JSON.stringify(body), signal }, 'text/event-stream'),
   }
 }

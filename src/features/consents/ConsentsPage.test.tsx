@@ -39,7 +39,7 @@ describe('routing by consents', () => {
   it('lets a user with all consents into the chat', async () => {
     const { router } = renderApp('/')
 
-    expect(await screen.findByText('The chat will be here soon.')).toBeInTheDocument()
+    expect(await screen.findByText('Choose a conversation or start a new one.')).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/chat')
     expect(screen.getByRole('note')).toHaveTextContent('You are chatting with an AI assistant')
   })
@@ -79,7 +79,7 @@ describe('ConsentsPage', () => {
 
     await user.click(continueButton)
 
-    expect(await screen.findByText('The chat will be here soon.')).toBeInTheDocument()
+    expect(await screen.findByText('Choose a conversation or start a new one.')).toBeInTheDocument()
     expect(router.state.location.pathname).toBe('/chat')
     expect(posts).toEqual([
       { types: ['age_18', 'health_data', 'ai_processing'], version: CONSENT_VERSION },
@@ -100,7 +100,7 @@ describe('ConsentsPage', () => {
     await user.click(screen.getByRole('checkbox', { name: HEALTH }))
     await user.click(screen.getByRole('button', { name: 'Continue' }))
 
-    await screen.findByText('The chat will be here soon.')
+    await screen.findByText('Choose a conversation or start a new one.')
     expect(posts).toEqual([{ types: ['health_data'], version: CONSENT_VERSION }])
   })
 

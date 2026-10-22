@@ -146,3 +146,61 @@ describe('createApiClient consent_required', () => {
     await expect(client.delete('/consents/age_18')).resolves.toBeUndefined()
   })
 })
+
+describe('createApiClient stream', () => {
+  const PATH = '/conversations/c1/messages'
+
+  it('POSTs JSON with the token, asks for SSE and returns the open response', async () => {
+    let seen: { auth: string | null; accept: string | null; body: unknown } | null = null
+    server.use(
+      http.post(`${API}${PATH}`, async ({ request }) => {
+        seen = {
+          auth: request.headers.get('Authorization'),
+          accept: request.headers.get('Accept'),
+          body: await request.json(),
+        }
+        return new HttpResponse('event: token\ndata: {"text":"x"}\n\n', {
+          headers: { 'Content-Type': 'text/event-stream' },
+        })
+      }),
+    )
+    const { client } = makeClient()
+
+    const response = await client.stream(PATH, { content: 'Hi' })
+    expect(await response.text()).toContain('event: token')
+    expect(seen).toEqual({
+      auth: 'Bearer tok-123',
+      accept: 'text/event-stream',
+      body: { content: 'Hi' },
+    })
+  })
+
+  it('throws ApiError for errors before the stream (409 conversation_busy)', async () => {
+    server.use(
+      http.post(`${API}${PATH}`, () =>
+        HttpResponse.json({ code: 'conversation_busy', message: 'busy' }, { status: 409 }),
+      ),
+    )
+    const { client } = makeClient()
+
+    const error = await catchError(client.stream(PATH, { content: 'Hi' }))
+    expect(error).toMatchObject({ status: 409, code: 'conversation_busy' })
+  })
+
+  it('logs out on 401 and rethrows an abort as is', async () => {
+    server.use(
+      http.post(`${API}${PATH}`, () =>
+        HttpResponse.json({ code: 'invalid_token', message: 'x' }, { status: 401 }),
+      ),
+    )
+    const { client, onUnauthorized } = makeClient()
+    await catchError(client.stream(PATH, { content: 'Hi' }))
+    expect(onUnauthorized).toHaveBeenCalledOnce()
+
+    const controller = new AbortController()
+    controller.abort()
+    await expect(
+      client.stream(PATH, { content: 'Hi' }, controller.signal),
+    ).rejects.not.toBeInstanceOf(ApiError)
+  })
+})
