@@ -1,0 +1,17 @@
+# Only what `pnpm build` needs goes into the build context.
+.git
+.github
+node_modules
+dist
+coverage
+docs
+README.md
+CLAUDE.md
+*.log
+*.tsbuildinfo
+*-pastedcontent-*.txt
+# Vite would read .env.production(.local); build-time values come only from build args.
+.env*
+Dockerfile
+.dockerignore
+fly.toml

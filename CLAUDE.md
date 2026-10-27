@@ -123,6 +123,19 @@ pnpm build # tsc -b && vite build
 pnpm gen:api # regenerate src/shared/api/schema.d.ts from a running backend
 pnpm dlx shadcn@latest add <component>
 
+## Deploy (docs/deploy.md)
+
+- Staging: Fly app `hair-chat-web-stg` (fra), `fly deploy -a hair-chat-web-stg --ha=false`.
+  `Dockerfile` (node 24 build -> nginx-unprivileged :8080), `nginx/*.template` (rendered at start:
+  `AUTH0_DOMAIN`, `API_UPSTREAM`), `fly.toml` (`[build.args]` = public VITE_AUTH0_* values, keep
+  equal to .env.development).
+- nginx proxies `/api/*` to `hair-chat-api-stg.flycast` (private, `/api` stripped, SSE unbuffered).
+- CSP lives in `nginx/security-headers.inc.template`. Exceptions: Auth0 in connect-src/frame-src,
+  `worker-src blob:` (auth0-spa-js token worker), `style-src 'unsafe-inline'` (sonner/Radix
+  `<style>`). A new third-party origin needs a CSP change; scripts stay `'self'`.
+- A new deployed origin must be added to Auth0 (Callback, Logout incl. `/login?deleted=1`,
+  Web Origins, Allowed Origins).
+
 ## Workflow for the agent
 
 - Branching: GitFlow. Branch names: `feature/*`, `fix/*`, `chore/*`, always cut from `develop`.
