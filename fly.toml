@@ -1,0 +1,32 @@
+# Staging frontend: nginx serves the SPA and proxies /api/* to hair-chat-api-stg over Flycast.
+# See docs/deploy.md.
+app = "hair-chat-web-stg"
+primary_region = "fra"
+
+[build]
+  dockerfile = "Dockerfile"
+
+# Public Auth0 SPA settings (same values as .env.development; not secrets).
+[build.args]
+  VITE_AUTH0_DOMAIN = "hair-chat-dev.eu.auth0.com"
+  VITE_AUTH0_CLIENT_ID = "z0UtBRhcSduAlAFY6s1mbXRnqck5o5yr"
+  VITE_AUTH0_AUDIENCE = "https://api.hair-chat.dev"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "suspend"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [[http_service.checks]]
+    method = "GET"
+    path = "/healthz"
+    grace_period = "5s"
+    interval = "30s"
+    timeout = "2s"
+
+[[vm]]
+  memory = "256mb"
+  cpu_kind = "shared"
+  cpus = 1
