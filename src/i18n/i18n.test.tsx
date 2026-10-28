@@ -2,6 +2,7 @@ import { screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, it } from 'vitest'
 
+import { WAKING_PHRASES } from '@/components/wakingPhrases'
 import { auth0 } from '@/test/auth0Mock'
 import { renderApp } from '@/test/render'
 
@@ -17,6 +18,17 @@ describe('i18n', () => {
     expect(keysOf(resources[lng].translation).sort()).toEqual(
       keysOf(resources.en.translation).sort(),
     )
+  })
+
+  it.each(SUPPORTED_LANGUAGES)('locale %s has every waiting phrase, all different', (lng) => {
+    const keys = [...WAKING_PHRASES, 'waiting.longer'] as const
+    const texts = keys.map((key) => i18n.getFixedT(lng)(key))
+    const english = keys.map((key) => i18n.getFixedT('en')(key))
+    texts.forEach((text, i) => {
+      expect(text).not.toBe(keys[i])
+      if (lng !== 'en') expect(text).not.toBe(english[i])
+    })
+    expect(new Set(texts).size).toBe(texts.length)
   })
 
   it('maps a regional browser language to a supported one', async () => {

@@ -3,14 +3,22 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { WAKING_HINT_DELAY_MS } from '@/components/WakingHint'
+import { WAKING_HINT_DELAY_MS, WAKING_LONGER_MS, WAKING_PHRASE_MS } from '@/components/WakingHint'
 import { AUTH_LOADING_LIMIT_MS } from '@/features/auth/RequireAuth'
 import { auth0 } from '@/test/auth0Mock'
 import { API, consentsFixture } from '@/test/msw/handlers'
 import { server } from '@/test/msw/server'
 import { renderApp } from '@/test/render'
 
-const WAKING = 'The service is waking up, this will take a few seconds…'
+/** The waking phrases in en.json order; WakingHint shows them shuffled. */
+const PHRASES = [
+  'One moment, getting everything ready for our chat…',
+  'Pulling up our past conversations…',
+  'Combing through my thoughts…',
+  'Just a sec, adding a little shine…',
+  'Working out the tangles…',
+]
+const LONGER = 'This is taking a little longer than usual. Almost there…'
 const CHAT_HOME = 'Choose a conversation or start a new one.'
 const UNAVAILABLE = 'The service is not available right now. Please try again in a minute.'
 
@@ -69,18 +77,63 @@ describe('startup while the API wakes up', () => {
     expect(calls).toBe(1)
   })
 
-  it('explains the wait when the API has not answered for 3 s', async () => {
+  it('explains the wait when the API has not answered for 1.5 s', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true })
     server.use(http.get(`${API}/consents`, () => new Promise<never>(() => undefined)))
     renderApp('/chat')
 
     expect(await screen.findByText('Loading…')).toBeInTheDocument()
-    expect(screen.queryByText(WAKING)).not.toBeInTheDocument()
+    const status = screen.getByRole('status')
+    for (const phrase of PHRASES) expect(status).not.toHaveTextContent(phrase)
 
     act(() => {
       vi.advanceTimersByTime(WAKING_HINT_DELAY_MS)
     })
-    expect(screen.getByRole('status')).toHaveTextContent(WAKING)
+    expect(PHRASES.some((phrase) => status.textContent.includes(phrase))).toBe(true)
+  })
+
+  it('rotates shuffled friendly phrases, then calmly says it takes longer', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    // Fisher–Yates with random() = 0 turns [prepare, history, combing, shine, tangles]
+    // into [history, combing, shine, tangles, prepare]: the order really is shuffled.
+    vi.spyOn(Math, 'random').mockReturnValue(0)
+    server.use(http.get(`${API}/consents`, () => new Promise<never>(() => undefined)))
+    renderApp('/chat')
+    const status = await screen.findByRole('status')
+
+    act(() => {
+      vi.advanceTimersByTime(WAKING_HINT_DELAY_MS)
+    })
+    expect(status).toHaveTextContent('Pulling up our past conversations…')
+
+    act(() => {
+      vi.advanceTimersByTime(WAKING_PHRASE_MS)
+    })
+    expect(status).toHaveTextContent('Combing through my thoughts…')
+    act(() => {
+      vi.advanceTimersByTime(WAKING_PHRASE_MS)
+    })
+    expect(status).toHaveTextContent('Just a sec, adding a little shine…')
+    // The jokes are aria-hidden; screen readers keep hearing only the first phrase.
+    expect(screen.getByText('Just a sec, adding a little shine…')).toHaveAttribute(
+      'aria-hidden',
+      'true',
+    )
+    expect(
+      screen.getByText('Pulling up our past conversations…', { selector: '[aria-live="polite"]' }),
+    ).toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(WAKING_LONGER_MS)
+    })
+    expect(status).toHaveTextContent(LONGER)
+    expect(status).not.toHaveTextContent('Just a sec, adding a little shine…')
+    expect(screen.getByText(LONGER, { selector: '[aria-live="polite"]' })).toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(WAKING_PHRASE_MS * 4)
+    })
+    expect(status).toHaveTextContent(LONGER)
   })
 
   it('offers a reload when Auth0 keeps loading', () => {
@@ -93,7 +146,7 @@ describe('startup while the API wakes up', () => {
       vi.advanceTimersByTime(WAKING_HINT_DELAY_MS)
     })
     // Not our API: no "waking up" while Auth0 restores the session.
-    expect(screen.queryByText(WAKING)).not.toBeInTheDocument()
+    for (const phrase of PHRASES) expect(screen.queryByText(phrase)).not.toBeInTheDocument()
 
     act(() => {
       vi.advanceTimersByTime(AUTH_LOADING_LIMIT_MS)
