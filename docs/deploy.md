@@ -45,8 +45,12 @@ tenant). `VITE_AUTH0_DOMAIN` also feeds the CSP (`AUTH0_DOMAIN` in the runtime i
   Flycast name is resolved at request time and again every 30 s, not once at start (nginx would
   not even start if the name did not resolve).
 - SSE (`POST /conversations/{id}/messages`): `proxy_buffering off`, `proxy_cache off`, HTTP/1.1
-  with an empty `Connection` header, `proxy_read_timeout 300s`. gzip covers static types only;
-  `text/event-stream` is not in `gzip_types` and proxied responses are never compressed.
+  with an empty `Connection` header (all of `/api`, shared in `nginx/api-proxy.inc.template`).
+  gzip covers static types only; `text/event-stream` is not in `gzip_types` and proxied
+  responses are never compressed.
+- Timeouts: `proxy_connect_timeout 10s` everywhere; `proxy_read_timeout 300s` only for
+  `POST /api/conversations/*/messages` (SSE), 60s for every other `/api/*` call (GET of the same
+  path included: non-POST is sent to `@api` through `error_page 418`).
 - Security headers on every page and asset: `X-Content-Type-Options`, `Referrer-Policy`,
   `Permissions-Policy`, `Content-Security-Policy`:
 

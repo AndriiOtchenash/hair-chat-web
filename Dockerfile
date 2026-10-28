@@ -34,7 +34,8 @@ ENV AUTH0_DOMAIN=$VITE_AUTH0_DOMAIN \
     NGINX_ENVSUBST_FILTER="^(AUTH0_DOMAIN|API_UPSTREAM)$"
 
 RUN rm /etc/nginx/conf.d/default.conf
-COPY nginx/default.conf.template nginx/security-headers.inc.template /etc/nginx/templates/
+COPY nginx/default.conf.template nginx/security-headers.inc.template nginx/api-proxy.inc.template \
+    /etc/nginx/templates/
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 8080
