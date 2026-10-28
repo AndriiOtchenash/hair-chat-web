@@ -18,7 +18,9 @@
       "unknown": "Nie udało się zalogować. Spróbuj ponownie."
     },
     "accountDeleted": "Konto zostało usunięte",
-    "accountDeletedText": "Twój profil, rozmowy i zgody zostały usunięte. W każdej chwili możesz zalogować się ponownie i zacząć od nowa."
+    "accountDeletedText": "Twój profil, rozmowy i zgody zostały usunięte. W każdej chwili możesz zalogować się ponownie i zacząć od nowa.",
+    "waking": "Usługa się wybudza, to potrwa kilka sekund…",
+    "tooSlow": "Logowanie trwa zbyt długo. Sprawdź połączenie i spróbuj ponownie."
   },
   "language": {
     "label": "Język",
@@ -59,7 +61,9 @@
     "message_blocked": "Wiadomość nie została wysłana, ponieważ narusza zasady korzystania. Sformułuj ją inaczej.",
     "llm_not_configured": "Asystent jest teraz niedostępny. Spróbuj później.",
     "llm_unavailable": "Asystent jest chwilowo niedostępny. Twoja wiadomość została zapisana; spróbuj za kilka minut.",
-    "llm_request_rejected": "Asystent nie mógł odpowiedzieć na tę wiadomość. Została zapisana; spróbuj ją przeformułować."
+    "llm_request_rejected": "Asystent nie mógł odpowiedzieć na tę wiadomość. Została zapisana; spróbuj ją przeformułować.",
+    "timeout": "Serwer nie odpowiedział na czas. Spróbuj ponownie.",
+    "service_unavailable": "Usługa jest teraz niedostępna. Spróbuj ponownie za minutę."
   },
   "nav": {
     "chat": "Czat",

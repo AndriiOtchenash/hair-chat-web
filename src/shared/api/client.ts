@@ -8,8 +8,16 @@ export interface ApiClientOptions {
   onUnauthorized: () => void
   /** Called on 403 consent_required (backend rule 7) so the app can show the consent screen. */
   onConsentRequired?: () => void
+  /** Whole-request limit for everything but `stream()`; default REQUEST_TIMEOUT_MS. */
+  timeoutMs?: number
   fetch?: typeof fetch
 }
+
+/**
+ * A cold API machine on Fly can keep a request hanging for minutes (nginx waits up to 300 s for
+ * SSE), so ordinary calls give up after 20 s with ApiError `timeout`; queries then retry it.
+ */
+export const REQUEST_TIMEOUT_MS = 20_000
 
 export interface ApiClient {
   request<T>(path: string, init?: RequestInit): Promise<T>
@@ -75,10 +83,31 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
     return response
   }
 
-  async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
-    const response = await send(path, init, 'application/json')
-    if (response.status === 204) return undefined as T
-    return (await response.json()) as T
+  /** Runs `call` (fetch and body read) under the request timeout; a timeout is ApiError `timeout`. */
+  async function timed<T>(init: RequestInit, call: (init: RequestInit) => Promise<T>): Promise<T> {
+    const timeout = new AbortController()
+    const timer = setTimeout(() => {
+      timeout.abort()
+    }, options.timeoutMs ?? REQUEST_TIMEOUT_MS)
+    const signal = init.signal ? AbortSignal.any([init.signal, timeout.signal]) : timeout.signal
+    try {
+      return await call({ ...init, signal })
+    } catch (cause) {
+      if (timeout.signal.aborted && !init.signal?.aborted) {
+        throw new ApiError(0, CLIENT_ERROR_CODES.timeout, 'Request timed out')
+      }
+      throw cause
+    } finally {
+      clearTimeout(timer)
+    }
+  }
+
+  function request<T>(path: string, init: RequestInit = {}): Promise<T> {
+    return timed(init, async (init) => {
+      const response = await send(path, init, 'application/json')
+      if (response.status === 204) return undefined as T
+      return (await response.json()) as T
+    })
   }
 
   return {
@@ -93,16 +122,18 @@ export function createApiClient(options: ApiClientOptions): ApiClient {
         method: 'DELETE',
         body: body === undefined ? undefined : JSON.stringify(body),
       }),
-    download: async (path: string) => {
-      const response = await send(path, { method: 'GET' }, '*/*')
-      return {
-        blob: await response.blob(),
-        filename: filenameFromDisposition(response.headers.get('Content-Disposition')),
-      }
-    },
+    download: (path: string) =>
+      timed({ method: 'GET' }, async (init) => {
+        const response = await send(path, init, '*/*')
+        return {
+          blob: await response.blob(),
+          filename: filenameFromDisposition(response.headers.get('Content-Disposition')),
+        }
+      }),
     endSession: () => {
       ended = true
     },
+    // No timeout: an answer may stream for minutes (the backend pings every 15 s).
     stream: (path: string, body: unknown, signal?: AbortSignal) =>
       send(path, { method: 'POST', body: JSON.stringify(body), signal }, 'text/event-stream'),
   }

@@ -18,7 +18,9 @@
       "unknown": "Sign-in failed. Please try again."
     },
     "accountDeleted": "Account deleted",
-    "accountDeletedText": "Your profile, conversations and consents have been deleted. You can sign in again at any time to start over."
+    "accountDeletedText": "Your profile, conversations and consents have been deleted. You can sign in again at any time to start over.",
+    "waking": "The service is waking up, this will take a few seconds…",
+    "tooSlow": "Sign-in is taking too long. Check your connection and try again."
   },
   "language": {
     "label": "Language",
@@ -59,7 +61,9 @@
     "message_blocked": "This message was not sent because it breaks the usage rules. Please rephrase it.",
     "llm_not_configured": "The assistant is not available right now. Please try again later.",
     "llm_unavailable": "The assistant is temporarily unavailable. Your message is saved; please try again in a few minutes.",
-    "llm_request_rejected": "The assistant could not answer this message. Your message is saved; try rephrasing it."
+    "llm_request_rejected": "The assistant could not answer this message. Your message is saved; try rephrasing it.",
+    "timeout": "The server did not respond in time. Please try again.",
+    "service_unavailable": "The service is not available right now. Please try again in a minute."
   },
   "nav": {
     "chat": "Chat",
