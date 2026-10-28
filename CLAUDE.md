@@ -47,8 +47,8 @@ renderApp helper
   (`shared/api/retry.ts`: 502/503/504, network_error, timeout), 3 attempts, 1 s then 2 s pause;
   mutations never. Every call but `stream()` times out after 20 s (`REQUEST_TIMEOUT_MS`, ApiError
   `timeout`). A bare proxy 502/503/504 shows `errors.service_unavailable`.
-- No spinner without an end: API spinners show `<WakingHint />` after 3 s (friendly phrases every
-  2.5 s, aria-hidden except the first; calm "taking longer than usual" at 10 s) and every query
+- No spinner without an end: API spinners show `<WakingHint />` after 1.5 s (friendly phrases in random
+  order every 2.5 s, aria-hidden except the first; calm "taking longer than usual" at 10 s) and every query
   spinner turns into `ErrorAlert` + retry on failure; RequireAuth offers a reload after 20 s of
   Auth0 loading. Tests with retries: `renderApp(path, { retries: true })` (1 ms pauses).
 - Errors are shown via `useErrorMessage()` by `code` (`errors.<code>` in every locale, fallback

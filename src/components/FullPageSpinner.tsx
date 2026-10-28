@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 
 import { WakingHint } from './WakingHint'
 
-/** `wakingHint`: waiting for our API (default), so explain a slow start after 3 s. */
+/** `wakingHint`: waiting for our API (default), so explain a slow start after 1.5 s. */
 export function FullPageSpinner({ wakingHint = true }: { wakingHint?: boolean }) {
   const { t } = useTranslation()
   return (
