@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { useParams } from 'react-router'
 
 import { ErrorAlert } from '@/components/ErrorAlert'
+import { WakingHint } from '@/components/WakingHint'
 import { Button } from '@/components/ui/button'
 import { ApiError } from '@/shared/api/errors'
 import { useErrorMessage } from '@/shared/api/useErrorMessage'
@@ -124,9 +125,10 @@ export function ConversationView({ conversationId }: { conversationId: string })
 
   if (messages.isPending) {
     return (
-      <div className="flex flex-1 items-center justify-center" role="status">
+      <div className="flex flex-1 flex-col items-center justify-center gap-2" role="status">
         <LoaderCircleIcon aria-hidden className="size-6 animate-spin text-muted-foreground" />
         <span className="sr-only">{t('auth.loading')}</span>
+        <WakingHint />
       </div>
     )
   }

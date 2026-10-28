@@ -7,9 +7,9 @@ import { server } from '@/test/msw/server'
 import { createApiClient, filenameFromDisposition } from './client'
 import { ApiError } from './errors'
 
-function makeClient(getToken = () => Promise.resolve('tok-123')) {
+function makeClient(getToken = () => Promise.resolve('tok-123'), timeoutMs?: number) {
   const onUnauthorized = vi.fn()
-  const client = createApiClient({ baseUrl: API, getToken, onUnauthorized })
+  const client = createApiClient({ baseUrl: API, getToken, onUnauthorized, timeoutMs })
   return { client, onUnauthorized }
 }
 
@@ -272,5 +272,27 @@ describe('filenameFromDisposition', () => {
     ['attachment; filename="C:\\\\Windows\\\\x.json"', 'x.json'],
   ])('%s -> %s', (header, expected) => {
     expect(filenameFromDisposition(header)).toBe(expected)
+  })
+
+  it('gives up on a request after the timeout with ApiError timeout', async () => {
+    server.use(http.get(`${API}/me`, () => new Promise<never>(() => undefined)))
+    const { client } = makeClient(undefined, 20)
+
+    expect(await catchError(client.get('/me'))).toMatchObject({ status: 0, code: 'timeout' })
+  })
+
+  it('does not time out a stream', async () => {
+    server.use(
+      http.post(`${API}/conversations/c1/messages`, async () => {
+        await new Promise((resolve) => setTimeout(resolve, 60))
+        return new HttpResponse('event: done\ndata: {}\n\n', {
+          headers: { 'Content-Type': 'text/event-stream' },
+        })
+      }),
+    )
+    const { client } = makeClient(undefined, 20)
+
+    const response = await client.stream('/conversations/c1/messages', { content: 'hi' })
+    expect(response.ok).toBe(true)
   })
 })

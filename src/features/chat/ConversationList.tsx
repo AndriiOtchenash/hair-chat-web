@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { NavLink, useNavigate } from 'react-router'
 
 import { ErrorAlert } from '@/components/ErrorAlert'
+import { WakingHint } from '@/components/WakingHint'
 import { Button } from '@/components/ui/button'
 import { useErrorMessage } from '@/shared/api/useErrorMessage'
 
@@ -62,9 +63,10 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
       <NewConversationButton onCreated={onNavigate} />
       <div className="min-h-0 flex-1 overflow-y-auto">
         {conversations.isPending && (
-          <div role="status" className="flex justify-center py-4">
+          <div role="status" className="flex flex-col items-center gap-2 py-4">
             <LoaderCircleIcon aria-hidden className="size-5 animate-spin text-muted-foreground" />
             <span className="sr-only">{t('auth.loading')}</span>
+            <WakingHint className="px-2" />
           </div>
         )}
         {conversations.isError && (

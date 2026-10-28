@@ -43,6 +43,13 @@ renderApp helper
   Never call `fetch` directly from components. Server state lives in TanStack Query hooks
   (`features/<x>/use<Thing>.ts`).
 - 401 or a failed token refresh -> logout (ApiClientProvider). 4xx are not retried.
+- Startup resilience (cold API on Fly): queries retry only transient failures
+  (`shared/api/retry.ts`: 502/503/504, network_error, timeout), 3 attempts, 1 s then 2 s pause;
+  mutations never. Every call but `stream()` times out after 20 s (`REQUEST_TIMEOUT_MS`, ApiError
+  `timeout`). A bare proxy 502/503/504 shows `errors.service_unavailable`.
+- No spinner without an end: API spinners show `<WakingHint />` after 3 s and every query
+  spinner turns into `ErrorAlert` + retry on failure; RequireAuth offers a reload after 20 s of
+  Auth0 loading. Tests with retries: `renderApp(path, { retries: true })` (1 ms pauses).
 - Errors are shown via `useErrorMessage()` by `code` (`errors.<code>` in every locale, fallback
   `errors.unknown`); never show the server's `message` to users. Client-side codes:
   `network_error`, `bad_response`.

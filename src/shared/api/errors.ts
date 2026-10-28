@@ -8,6 +8,8 @@ export interface ErrorBody {
 export const CLIENT_ERROR_CODES = {
   network: 'network_error',
   badResponse: 'bad_response',
+  /** No complete answer within the request timeout (client.ts, REQUEST_TIMEOUT_MS). */
+  timeout: 'timeout',
 } as const
 
 export class ApiError extends Error {
