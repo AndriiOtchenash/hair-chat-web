@@ -15,6 +15,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 
+import { RENAME_INPUT_ATTR } from './ConversationItem'
 import { ConversationList, NewConversationButton } from './ConversationList'
 
 /** /chat and /chat/:id: conversation list (side column, or a slide-out panel below md) + Outlet. */
@@ -41,6 +42,15 @@ export function ChatLayout() {
             side="left"
             showCloseButton={false}
             className="w-[85%] max-w-xs gap-0 p-4 pt-12"
+            onEscapeKeyDown={(event) => {
+              // Escape in the rename field cancels the rename only.
+              if (
+                event.target instanceof Element &&
+                event.target.closest(`[${RENAME_INPUT_ATTR}]`)
+              ) {
+                event.preventDefault()
+              }
+            }}
           >
             <SheetClose asChild>
               <Button

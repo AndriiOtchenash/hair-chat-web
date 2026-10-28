@@ -1,10 +1,11 @@
-import { FileJsonIcon, FileTextIcon, Trash2Icon } from 'lucide-react'
+import { FileJsonIcon, FileTextIcon, MessageSquareXIcon, Trash2Icon } from 'lucide-react'
 import { useId, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { toast } from 'sonner'
 
 import {
   AlertDialog,
+  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -18,7 +19,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useEndSession } from '@/features/auth/useEndSession'
+import { useDeleteAllConversations } from '@/features/chat/api'
 import { useDeleteAccount, useExportData } from '@/features/me/api'
+import { ApiError } from '@/shared/api/errors'
 import { useErrorMessage } from '@/shared/api/useErrorMessage'
 
 /** Anchor of this card, linked from the consent revoke dialog. */
@@ -72,9 +75,59 @@ export function DataRightsCard() {
           </div>
           <p className="text-sm text-muted-foreground">{t('settings.data.downloadHint')}</p>
         </div>
-        <DeleteAccountDialog />
+        <div className="flex flex-wrap gap-3">
+          <DeleteAllConversationsDialog />
+          <DeleteAccountDialog />
+        </div>
       </CardContent>
     </Card>
+  )
+}
+
+/** DELETE /conversations: the account and consents stay. */
+function DeleteAllConversationsDialog() {
+  const { t } = useTranslation()
+  const errorMessage = useErrorMessage()
+  const deleteAll = useDeleteAllConversations({
+    onSuccess: () => toast.success(t('settings.data.allDeleted')),
+    onError: (error) =>
+      toast.error(
+        error instanceof ApiError && error.code === 'conversation_busy'
+          ? t('settings.data.deleteAllBusy')
+          : errorMessage(error),
+      ),
+  })
+
+  return (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <Button
+          variant="outline"
+          className="h-auto min-h-9 whitespace-normal"
+          disabled={deleteAll.isPending}
+        >
+          <MessageSquareXIcon aria-hidden />
+          {t('settings.data.deleteAll')}
+        </Button>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t('settings.data.deleteAllTitle')}</AlertDialogTitle>
+          <AlertDialogDescription>{t('settings.data.deleteAllText')}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>{t('settings.cancel')}</AlertDialogCancel>
+          <AlertDialogAction
+            variant="destructive"
+            onClick={() => {
+              deleteAll.mutate()
+            }}
+          >
+            {t('settings.data.deleteAllConfirm')}
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   )
 }
 

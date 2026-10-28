@@ -1,6 +1,12 @@
 import { http, HttpResponse } from 'msw'
 
-import type { ConversationOut, MessageOut, SendMessageRequest } from '@/shared/api/types'
+import type {
+  ConversationOut,
+  DeleteAllRequest,
+  MessageOut,
+  RenameRequest,
+  SendMessageRequest,
+} from '@/shared/api/types'
 
 import { API } from './api'
 
@@ -110,6 +116,8 @@ export interface ChatFake {
   reply: (conversationId: string, content: string) => Response
   /** Bodies of every POST to messages, in order. */
   sent: SendMessageRequest[]
+  /** Conversations generating an answer: PATCH works, DELETE answers 409 conversation_busy. */
+  busy: Set<string>
   saveUser: (conversationId: string, content: string) => MessageOut
   saveAssistant: (conversationId: string, content: string, id?: string) => MessageOut
 }
@@ -119,6 +127,7 @@ export function createChatFake(): ChatFake {
     conversations: [],
     messages: {},
     sent: [],
+    busy: new Set(),
     saveUser(conversationId, content) {
       const saved = message(nextId('u'), 'user', content)
       fake.messages[conversationId] = [saved, ...(fake.messages[conversationId] ?? [])]
@@ -149,7 +158,26 @@ function page<T>(items: T[], url: URL) {
   return { items: items.slice(start, end), next_cursor: end < items.length ? String(end) : null }
 }
 
+function notFound() {
+  return HttpResponse.json(
+    { code: 'not_found', message: 'Conversation not found' },
+    { status: 404 },
+  )
+}
+
+function busy() {
+  return HttpResponse.json(
+    { code: 'conversation_busy', message: 'An answer is being generated' },
+    { status: 409 },
+  )
+}
+
+function validationError() {
+  return HttpResponse.json({ code: 'validation_error', message: 'Invalid body' }, { status: 422 })
+}
+
 export function chatHandlers(fake: ChatFake) {
+  const find = (id: unknown) => fake.conversations.find((c) => c.id === id)
   return [
     http.get(`${API}/conversations`, ({ request }) =>
       HttpResponse.json(page(fake.conversations, new URL(request.url))),
@@ -160,14 +188,34 @@ export function chatHandlers(fake: ChatFake) {
       fake.messages[created.id] = []
       return HttpResponse.json(created, { status: 201 })
     }),
+    http.delete(`${API}/conversations`, async ({ request }) => {
+      const body = (await request.json()) as Partial<DeleteAllRequest>
+      if (body.confirm !== 'DELETE_ALL') return validationError()
+      if (fake.conversations.some((c) => fake.busy.has(c.id))) return busy()
+      fake.conversations = []
+      fake.messages = {}
+      return new HttpResponse(null, { status: 204 })
+    }),
+    // Like the backend RenameRequest: title stripped, 1..120 characters.
+    http.patch(`${API}/conversations/:id`, async ({ request, params }) => {
+      const found = find(params.id)
+      if (!found) return notFound()
+      const title = ((await request.json()) as Partial<RenameRequest>).title?.trim() ?? ''
+      if (title.length < 1 || title.length > 120) return validationError()
+      found.title = title
+      return HttpResponse.json(found)
+    }),
+    http.delete(`${API}/conversations/:id`, ({ params }) => {
+      const id = params.id as string
+      if (!find(id)) return notFound()
+      if (fake.busy.has(id)) return busy()
+      fake.conversations = fake.conversations.filter((c) => c.id !== id)
+      Reflect.deleteProperty(fake.messages, id)
+      return new HttpResponse(null, { status: 204 })
+    }),
     http.get(`${API}/conversations/:id/messages`, ({ request, params }) => {
       const items = fake.messages[params.id as string]
-      if (!items) {
-        return HttpResponse.json(
-          { code: 'not_found', message: 'Conversation not found' },
-          { status: 404 },
-        )
-      }
+      if (!items) return notFound()
       return HttpResponse.json(page(items, new URL(request.url)))
     }),
     http.post(`${API}/conversations/:id/messages`, async ({ request, params }) => {

@@ -92,6 +92,30 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/conversations/{conversation_id}': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    get?: never
+    put?: never
+    post?: never
+    /**
+     * Delete Conversation
+     * @description Hard delete with its messages and their llm_calls; no trash, no undo.
+     */
+    delete: operations['delete_conversation_conversations__conversation_id__delete']
+    options?: never
+    head?: never
+    /**
+     * Rename Conversation
+     * @description The title is kept: a later first message no longer replaces it.
+     */
+    patch: operations['rename_conversation_conversations__conversation_id__patch']
+    trace?: never
+  }
   '/conversations': {
     parameters: {
       query?: never
@@ -104,7 +128,11 @@ export interface paths {
     put?: never
     /** Create Conversation */
     post: operations['create_conversation_conversations_post']
-    delete?: never
+    /**
+     * Delete All Conversations
+     * @description Hard-deletes every conversation of the user; body {"confirm": "DELETE_ALL"}.
+     */
+    delete: operations['delete_all_conversations_conversations_delete']
     options?: never
     head?: never
     patch?: never
@@ -207,6 +235,14 @@ export interface components {
       items: components['schemas']['ConversationOut'][]
       /** Next Cursor */
       next_cursor: string | null
+    }
+    /** DeleteAllRequest */
+    DeleteAllRequest: {
+      /**
+       * Confirm
+       * @constant
+       */
+      confirm: 'DELETE_ALL'
     }
     /** DeleteMeRequest */
     DeleteMeRequest: {
@@ -377,6 +413,11 @@ export interface components {
       items: components['schemas']['MessageOut'][]
       /** Next Cursor */
       next_cursor: string | null
+    }
+    /** RenameRequest */
+    RenameRequest: {
+      /** Title */
+      title: string
     }
     /** SendMessageRequest */
     SendMessageRequest: {
@@ -620,6 +661,91 @@ export interface operations {
       }
     }
   }
+  delete_conversation_conversations__conversation_id__delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        conversation_id: string
+      }
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Missing or someone else's conversation */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description conversation_busy: an answer is being generated */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  rename_conversation_conversations__conversation_id__patch: {
+    parameters: {
+      query?: never
+      header?: never
+      path: {
+        conversation_id: string
+      }
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['RenameRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['ConversationOut']
+        }
+      }
+      /** @description Missing or someone else's */
+      404: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
   list_conversations_conversations_get: {
     parameters: {
       query?: {
@@ -669,6 +795,44 @@ export interface operations {
         }
         content: {
           'application/json': components['schemas']['ConversationOut']
+        }
+      }
+    }
+  }
+  delete_all_conversations_conversations_delete: {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody: {
+      content: {
+        'application/json': components['schemas']['DeleteAllRequest']
+      }
+    }
+    responses: {
+      /** @description Successful Response */
+      204: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description conversation_busy: one of them is generating; none deleted */
+      409: {
+        headers: {
+          [name: string]: unknown
+        }
+        content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
         }
       }
     }

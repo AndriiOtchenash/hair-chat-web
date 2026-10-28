@@ -106,7 +106,20 @@
     "errors": {
       "validation": "The message must be from 1 to 4000 characters long."
     },
-    "closePanel": "Close the list"
+    "closePanel": "Close the list",
+    "manage": {
+      "actions": "Actions for “{{title}}”",
+      "rename": "Rename",
+      "delete": "Delete",
+      "renameLabel": "Conversation name",
+      "renameEmpty": "The name cannot be empty.",
+      "deleteTitle": "Delete this conversation?",
+      "deleteText": "“{{title}}” and all its messages will be deleted. This cannot be undone.",
+      "deleteConfirm": "Delete",
+      "cancel": "Cancel",
+      "busy": "This conversation is still answering. Please try again later.",
+      "gone": "This conversation no longer exists."
+    }
   },
   "consents": {
     "title": "Before we start",
@@ -140,7 +153,7 @@
     "revokeDataHint": "To delete your data, see the <anchor>Your data</anchor> section.",
     "data": {
       "title": "Your data",
-      "intro": "Download a copy of everything we store about you, or delete your account.",
+      "intro": "Download a copy of everything we store about you, delete your conversations or your whole account.",
       "downloading": "Preparing the file…",
       "delete": "Delete account",
       "deleteTitle": "Delete your account?",
@@ -152,7 +165,13 @@
       "deleteConfirm": "Delete forever",
       "downloadHtml": "Download to read",
       "downloadJson": "Download for transfer (JSON)",
-      "downloadHint": "“To read” is a page you can open in a browser or print. JSON is the full data in a machine-readable format, for moving it to another service."
+      "downloadHint": "“To read” is a page you can open in a browser or print. JSON is the full data in a machine-readable format, for moving it to another service.",
+      "deleteAll": "Delete all conversations",
+      "deleteAllTitle": "Delete all conversations?",
+      "deleteAllText": "All your conversations and their messages will be deleted. Your account and consents stay. This cannot be undone.",
+      "deleteAllConfirm": "Delete all",
+      "deleteAllBusy": "One of the conversations is still answering. Please try again later.",
+      "allDeleted": "All conversations deleted."
     }
   },
   "safety": {
