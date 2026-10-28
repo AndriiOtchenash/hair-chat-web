@@ -19,8 +19,17 @@
     },
     "accountDeleted": "Konto zostało usunięte",
     "accountDeletedText": "Twój profil, rozmowy i zgody zostały usunięte. W każdej chwili możesz zalogować się ponownie i zacząć od nowa.",
-    "waking": "Usługa się wybudza, to potrwa kilka sekund…",
     "tooSlow": "Logowanie trwa zbyt długo. Sprawdź połączenie i spróbuj ponownie."
+  },
+  "waiting": {
+    "phrases": {
+      "prepare": "Chwileczkę, przygotowuję wszystko do rozmowy…",
+      "history": "Przeglądam historię naszych rozmów…",
+      "combing": "Rozczesuję myśli…",
+      "shine": "Jeszcze sekundka — nadajemy połysk…",
+      "tangles": "Rozplątuję supełki…"
+    },
+    "longer": "Trwa to nieco dłużej niż zwykle. Jeszcze chwilka…"
   },
   "language": {
     "label": "Język",

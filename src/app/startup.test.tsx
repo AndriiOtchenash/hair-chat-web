@@ -3,14 +3,15 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { WAKING_HINT_DELAY_MS } from '@/components/WakingHint'
+import { WAKING_HINT_DELAY_MS, WAKING_LONGER_MS, WAKING_PHRASE_MS } from '@/components/WakingHint'
 import { AUTH_LOADING_LIMIT_MS } from '@/features/auth/RequireAuth'
 import { auth0 } from '@/test/auth0Mock'
 import { API, consentsFixture } from '@/test/msw/handlers'
 import { server } from '@/test/msw/server'
 import { renderApp } from '@/test/render'
 
-const WAKING = 'The service is waking up, this will take a few seconds…'
+const WAKING = 'One moment, getting everything ready for our chat…'
+const LONGER = 'This is taking a little longer than usual. Almost there…'
 const CHAT_HOME = 'Choose a conversation or start a new one.'
 const UNAVAILABLE = 'The service is not available right now. Please try again in a minute.'
 
@@ -81,6 +82,42 @@ describe('startup while the API wakes up', () => {
       vi.advanceTimersByTime(WAKING_HINT_DELAY_MS)
     })
     expect(screen.getByRole('status')).toHaveTextContent(WAKING)
+  })
+
+  it('rotates friendly phrases, then calmly says it takes longer', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    server.use(http.get(`${API}/consents`, () => new Promise<never>(() => undefined)))
+    renderApp('/chat')
+    const status = await screen.findByRole('status')
+
+    act(() => {
+      vi.advanceTimersByTime(WAKING_HINT_DELAY_MS)
+    })
+    expect(status).toHaveTextContent(WAKING)
+
+    act(() => {
+      vi.advanceTimersByTime(WAKING_PHRASE_MS)
+    })
+    expect(status).toHaveTextContent('Pulling up our past conversations…')
+    act(() => {
+      vi.advanceTimersByTime(WAKING_PHRASE_MS)
+    })
+    expect(status).toHaveTextContent('Combing through my thoughts…')
+    // The jokes are aria-hidden; screen readers keep hearing only the first phrase.
+    expect(screen.getByText('Combing through my thoughts…')).toHaveAttribute('aria-hidden', 'true')
+    expect(screen.getByText(WAKING, { selector: '[aria-live="polite"]' })).toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(WAKING_LONGER_MS)
+    })
+    expect(status).toHaveTextContent(LONGER)
+    expect(status).not.toHaveTextContent('Combing through my thoughts…')
+    expect(screen.getByText(LONGER, { selector: '[aria-live="polite"]' })).toBeInTheDocument()
+
+    act(() => {
+      vi.advanceTimersByTime(WAKING_PHRASE_MS * 4)
+    })
+    expect(status).toHaveTextContent(LONGER)
   })
 
   it('offers a reload when Auth0 keeps loading', () => {

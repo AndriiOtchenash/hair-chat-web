@@ -19,8 +19,17 @@
     },
     "accountDeleted": "Account deleted",
     "accountDeletedText": "Your profile, conversations and consents have been deleted. You can sign in again at any time to start over.",
-    "waking": "The service is waking up, this will take a few seconds…",
     "tooSlow": "Sign-in is taking too long. Check your connection and try again."
+  },
+  "waiting": {
+    "phrases": {
+      "prepare": "One moment, getting everything ready for our chat…",
+      "history": "Pulling up our past conversations…",
+      "combing": "Combing through my thoughts…",
+      "shine": "Just a sec, adding a little shine…",
+      "tangles": "Working out the tangles…"
+    },
+    "longer": "This is taking a little longer than usual. Almost there…"
   },
   "language": {
     "label": "Language",
