@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
+import { toast } from 'sonner'
 import { afterAll, afterEach, beforeAll, beforeEach, vi } from 'vitest'
 
 import i18n from '@/i18n'
@@ -28,6 +29,8 @@ beforeEach(async () => {
 })
 afterEach(() => {
   cleanup()
+  // sonner keeps toasts in a module-level store and replays active ones to the next Toaster.
+  toast.dismiss()
 })
 afterAll(() => {
   server.close()

@@ -106,7 +106,20 @@
     "errors": {
       "validation": "Wiadomość musi mieć od 1 do 4000 znaków."
     },
-    "closePanel": "Zamknij listę"
+    "closePanel": "Zamknij listę",
+    "manage": {
+      "actions": "Działania dla „{{title}}”",
+      "rename": "Zmień nazwę",
+      "delete": "Usuń",
+      "renameLabel": "Nazwa rozmowy",
+      "renameEmpty": "Nazwa nie może być pusta.",
+      "deleteTitle": "Usunąć tę rozmowę?",
+      "deleteText": "„{{title}}” i wszystkie jej wiadomości zostaną usunięte. Tego nie można cofnąć.",
+      "deleteConfirm": "Usuń",
+      "cancel": "Anuluj",
+      "busy": "Rozmowa wciąż odpowiada. Spróbuj później.",
+      "gone": "Ta rozmowa już nie istnieje."
+    }
   },
   "consents": {
     "title": "Zanim zaczniemy",
@@ -140,7 +153,7 @@
     "revokeDataHint": "Aby usunąć swoje dane, przejdź do sekcji <anchor>Twoje dane</anchor>.",
     "data": {
       "title": "Twoje dane",
-      "intro": "Pobierz kopię wszystkiego, co o tobie przechowujemy, albo usuń konto.",
+      "intro": "Pobierz kopię wszystkiego, co o tobie przechowujemy, usuń rozmowy lub całe konto.",
       "downloading": "Przygotowujemy plik…",
       "delete": "Usuń konto",
       "deleteTitle": "Usunąć konto?",
@@ -152,7 +165,13 @@
       "deleteConfirm": "Usuń na zawsze",
       "downloadHtml": "Pobierz do czytania",
       "downloadJson": "Pobierz do przeniesienia (JSON)",
-      "downloadHint": "„Do czytania” to strona, którą otworzysz w przeglądarce lub wydrukujesz. JSON to pełne dane w formacie do odczytu maszynowego, do przeniesienia do innej usługi."
+      "downloadHint": "„Do czytania” to strona, którą otworzysz w przeglądarce lub wydrukujesz. JSON to pełne dane w formacie do odczytu maszynowego, do przeniesienia do innej usługi.",
+      "deleteAll": "Usuń wszystkie rozmowy",
+      "deleteAllTitle": "Usunąć wszystkie rozmowy?",
+      "deleteAllText": "Wszystkie twoje rozmowy i ich wiadomości zostaną usunięte. Konto i zgody pozostaną. Tego nie można cofnąć.",
+      "deleteAllConfirm": "Usuń wszystkie",
+      "deleteAllBusy": "Jedna z rozmów wciąż odpowiada. Spróbuj później.",
+      "allDeleted": "Wszystkie rozmowy usunięte."
     }
   },
   "safety": {

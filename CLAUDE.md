@@ -64,6 +64,12 @@ renderApp helper
   Rejected before the stream (409/422/503/network) -> the text goes back into the input.
 - `done.sources`/`truncated` are not in GET messages: kept in memory only (query key
   `answerMeta`), so they show for answers streamed in this session.
+- Conversation management (features/chat/api.ts): PATCH /conversations/{id} `{title}` (trim,
+  1..120) inline in the list (Enter saves, Escape cancels, blur saves, empty never sent), DELETE
+  /conversations/{id} from the row menu, DELETE /conversations `{confirm: "DELETE_ALL"}` in
+  /settings "Your data". All optimistic with rollback; 404 = gone (dropped, no rollback); 409
+  `conversation_busy` -> toast; deleting the open conversation -> /chat. Callbacks that must
+  outlive the screen (toasts, navigation) go in the hook options, not in `mutate()`.
 - 403 `consent_required` from any call -> ApiClientProvider refetches consents and navigates to
   /consents (global, no per-screen handling).
 - Data rights (backend ADR 0006, /settings "Your data"): `api.download()` for GET /me/export
@@ -105,7 +111,8 @@ renderApp helper
 
 1. No test touches the network: MSW runs with `onUnhandledFrame: 'error'`; Auth0 is faked
    (src/test/auth0Mock.ts, mocked in setup.ts). Never call real Auth0 or the real API in tests.
-   Default handlers (src/test/msw/handlers.ts) are recreated before each test; `consentsHandlers`
+   Default handlers (src/test/msw/handlers.ts) are recreated before each test (sonner toasts are
+   dismissed after each, its store is module-level); `consentsHandlers`
    is a stateful fake of /consents. With `server.use` the first matching handler wins.
 2. Every UI string goes through i18n and exists in all four locales (i18n.test.tsx checks keys).
 3. `AiDisclosure` ("you are chatting with an AI assistant", EU AI Act art. 50) is visible on every

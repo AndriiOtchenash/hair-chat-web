@@ -1,13 +1,34 @@
 import { LoaderCircleIcon, PlusIcon } from 'lucide-react'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { NavLink, useNavigate } from 'react-router'
+import { useMatch, useNavigate } from 'react-router'
+import { toast } from 'sonner'
 
 import { ErrorAlert } from '@/components/ErrorAlert'
 import { WakingHint } from '@/components/WakingHint'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
+import { ApiError } from '@/shared/api/errors'
+import type { ConversationOut } from '@/shared/api/types'
 import { useErrorMessage } from '@/shared/api/useErrorMessage'
 
-import { useConversations, useCreateConversation } from './api'
+import {
+  isNotFound,
+  useConversations,
+  useCreateConversation,
+  useDeleteConversation,
+  useRenameConversation,
+} from './api'
+import { ConversationItem } from './ConversationItem'
 
 export function NewConversationButton({
   onCreated,
@@ -46,10 +67,49 @@ export function NewConversationButton({
   )
 }
 
+/** Toast for a failed rename/delete: 409 = still answering, 404 = already gone (and dropped). */
+function useManageErrorToast() {
+  const { t } = useTranslation()
+  const errorMessage = useErrorMessage()
+  return (error: unknown) => {
+    if (error instanceof ApiError && error.code === 'conversation_busy') {
+      toast.error(t('chat.manage.busy'))
+    } else if (isNotFound(error)) {
+      toast(t('chat.manage.gone'))
+    } else {
+      toast.error(errorMessage(error))
+    }
+  }
+}
+
+/**
+ * Rename/delete for the list. A conversation that is open and gets deleted (or turns out to be
+ * gone) sends the user to /chat, where a new one starts.
+ */
+function useManageConversations() {
+  const navigate = useNavigate()
+  const openId = useMatch('/chat/:id')?.params.id
+  const notify = useManageErrorToast()
+  const leaveIfOpen = (id: string) => {
+    if (id === openId) void navigate('/chat', { replace: true })
+  }
+  const onError = (error: unknown, id: string) => {
+    notify(error)
+    if (isNotFound(error)) leaveIfOpen(id)
+  }
+  return {
+    rename: useRenameConversation({ onError }),
+    remove: useDeleteConversation({ onSuccess: leaveIfOpen, onError }),
+  }
+}
+
 /** Conversations, most recent first; `onNavigate` closes the mobile panel after a choice. */
 export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
   const { t, i18n } = useTranslation()
   const conversations = useConversations()
+  const { rename, remove } = useManageConversations()
+  const [editingId, setEditingId] = useState<string | null>(null)
+  const [toDelete, setToDelete] = useState<ConversationOut | null>(null)
   const dateFormat = new Intl.DateTimeFormat(i18n.language, {
     dateStyle: 'medium',
     timeStyle: 'short',
@@ -82,18 +142,25 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
                 .flatMap((page) => page.items)
                 .map((conversation) => (
                   <li key={conversation.id}>
-                    <NavLink
-                      to={`/chat/${conversation.id}`}
-                      onClick={onNavigate}
-                      className="block min-w-0 rounded-md px-2 py-2 hover:bg-accent aria-[current=page]:bg-accent"
-                    >
-                      <span className="block truncate text-sm font-medium">
-                        {conversation.title ?? t('chat.untitled')}
-                      </span>
-                      <span className="block truncate text-xs text-muted-foreground">
-                        {dateFormat.format(new Date(conversation.last_message_at))}
-                      </span>
-                    </NavLink>
+                    <ConversationItem
+                      conversation={conversation}
+                      date={dateFormat.format(new Date(conversation.last_message_at))}
+                      editing={editingId === conversation.id}
+                      onNavigate={onNavigate}
+                      onStartRename={() => {
+                        setEditingId(conversation.id)
+                      }}
+                      onRename={(title) => {
+                        setEditingId(null)
+                        rename.mutate({ id: conversation.id, title })
+                      }}
+                      onCancelRename={() => {
+                        setEditingId(null)
+                      }}
+                      onDelete={() => {
+                        setToDelete(conversation)
+                      }}
+                    />
                   </li>
                 ))}
             </ul>
@@ -111,6 +178,32 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
           </>
         )}
       </div>
+      <AlertDialog
+        open={toDelete !== null}
+        onOpenChange={(open) => {
+          if (!open) setToDelete(null)
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{t('chat.manage.deleteTitle')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {t('chat.manage.deleteText', { title: toDelete?.title ?? t('chat.untitled') })}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>{t('chat.manage.cancel')}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              onClick={() => {
+                if (toDelete) remove.mutate(toDelete.id)
+              }}
+            >
+              {t('chat.manage.deleteConfirm')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </nav>
   )
 }
