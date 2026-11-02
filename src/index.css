@@ -135,3 +135,36 @@
     width: 100%;
   }
 }
+
+/*
+ * A found message (search result, useFocusMessage sets data-highlighted for HIGHLIGHT_MS = 2 s):
+ * a yellow halo outside the bubble, readable on the light page, on the dark user bubble and in
+ * dark mode alike: a background-coloured gap, 3px yellow, 1px dark amber edge (yellow alone
+ * vanishes on white). 6px in all; the message list keeps that much room (overflow clips it).
+ * It holds for 1 s, then fades out by 2 s; with reduced motion it is a plain frame for 2 s.
+ */
+@utility search-highlight {
+  box-shadow:
+    0 0 0 2px var(--background),
+    0 0 0 5px var(--color-yellow-400),
+    0 0 0 6px var(--color-amber-700);
+  @media (prefers-reduced-motion: no-preference) {
+    animation: search-highlight-fade 2s ease-in forwards;
+  }
+}
+
+@keyframes search-highlight-fade {
+  0%,
+  50% {
+    box-shadow:
+      0 0 0 2px var(--background),
+      0 0 0 5px var(--color-yellow-400),
+      0 0 0 6px var(--color-amber-700);
+  }
+  100% {
+    box-shadow:
+      0 0 0 2px transparent,
+      0 0 0 5px transparent,
+      0 0 0 6px transparent;
+  }
+}
