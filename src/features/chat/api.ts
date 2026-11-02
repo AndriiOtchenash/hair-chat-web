@@ -214,6 +214,11 @@ export function useConversationSearch(q: string) {
       })
     },
     enabled: q.length >= MIN_SEARCH_CHARS,
+    // No cache: the backend indexes a new answer in the background ~0.5 s after the stream ends,
+    // so invalidating on `done` would come too early and a cached result would hide the answer.
+    // Every search (also the same text again) asks the server.
+    staleTime: 0,
+    gcTime: 0,
   })
 }
 

@@ -100,6 +100,37 @@ describe('conversation search: typing', () => {
     expect(screen.getByRole('link', { name: /^Oily hair/ })).toBeInTheDocument()
   })
 
+  it('asks the server again for the same text and never shows the old results meanwhile', async () => {
+    const { user } = await openChat()
+    await user.type(searchBox(), 'oily')
+    const first = await screen.findByRole('list', { name: 'Search results' })
+    expect(within(first).getAllByRole('link')).toHaveLength(1)
+    await user.keyboard('{Escape}')
+
+    // The backend indexes a new answer in the background after its stream ended; the next
+    // search is held so the test can look at the screen while it is in flight.
+    chatFake.saveUser(C2, 'Is my scalp oily?')
+    let release!: () => void
+    const released = new Promise<void>((resolve) => {
+      release = resolve
+    })
+    server.use(
+      http.get(`${API}/conversations/search`, async () => {
+        await released
+        return undefined
+      }),
+    )
+    await user.type(searchBox(), 'oily')
+
+    expect(await screen.findByRole('status')).toHaveTextContent('Searching…')
+    expect(screen.queryByRole('list', { name: 'Search results' })).not.toBeInTheDocument()
+
+    release()
+    const second = await screen.findByRole('list', { name: 'Search results' })
+    expect(within(second).getByRole('link', { name: /Dry ends/ })).toBeInTheDocument()
+    expect(chatFake.searches).toEqual(['oily', 'oily'])
+  })
+
   it('the cross clears the search and returns the focus to the box', async () => {
     const { user } = await openChat()
     await user.type(searchBox(), 'oily')

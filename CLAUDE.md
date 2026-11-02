@@ -75,7 +75,8 @@ renderApp helper
   filled box eats the Escape). GET /conversations/search -> `{mode, items}`; results replace the
   list; `mode: "text"` shows a quiet "simplified search" note. One query per text, the request
   gets TanStack Query's AbortSignal, so an outdated request is aborted and its answer lands in
-  its own cache key. A result navigates with state `{focusMessageId}`; useFocusMessage loads
+  its own cache key. No search cache (staleTime/gcTime 0): new answers are indexed ~0.5 s after
+  the stream, so the same text asks the server again. A result navigates with state `{focusMessageId}`; useFocusMessage loads
   older message pages (no "page around a message" API) up to MAX_FOCUS_PAGES (10 = 200
   messages), then scrolls to the message, focuses it and highlights it for 2 s; past the limit
   the conversation just opens at its end.
