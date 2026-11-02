@@ -119,6 +119,15 @@
       "cancel": "Cancel",
       "busy": "This conversation is still answering. Please try again later.",
       "gone": "This conversation no longer exists."
+    },
+    "search": {
+      "label": "Search conversations",
+      "placeholder": "Search conversations…",
+      "clear": "Clear search",
+      "searching": "Searching…",
+      "results": "Search results",
+      "empty": "Nothing found.",
+      "textMode": "Simplified search: only exact words from your questions are matched right now."
     }
   },
   "consents": {

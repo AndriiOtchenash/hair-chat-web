@@ -13,6 +13,7 @@ import { useAnswerMeta, useMessages } from './api'
 import { MessageBubble } from './MessageBubble'
 import { MessageInput } from './MessageInput'
 import { SafetyNoticeCard } from './SafetyNoticeCard'
+import { useFocusMessage } from './useFocusMessage'
 import { useSendMessage, type SendState } from './useSendMessage'
 
 /** Route element for /chat/:id; keyed by id so a new conversation starts with fresh state. */
@@ -55,6 +56,16 @@ export function ConversationView({ conversationId }: { conversationId: string })
   )
   const generating = state.status !== 'idle'
   const { hasNextPage, isFetchingNextPage, fetchNextPage } = messages
+  // A search result opened this conversation: bring its message into view.
+  useFocusMessage(scrollRef, {
+    items,
+    loadedPages: messages.data?.pages.length ?? 0,
+    ready: messages.isSuccess,
+    failed: messages.isFetchNextPageError,
+    hasNextPage,
+    isFetchingNextPage,
+    fetchNextPage,
+  })
 
   function loadOlder() {
     if (!hasNextPage || isFetchingNextPage) return
@@ -170,6 +181,7 @@ export function ConversationView({ conversationId }: { conversationId: string })
             <Fragment key={message.id}>
               {safetyBefore === message.id && safetyCard}
               <MessageBubble
+                id={message.id}
                 role={message.role}
                 content={message.content}
                 meta={answerMeta[message.id]}

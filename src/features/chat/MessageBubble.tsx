@@ -7,6 +7,7 @@ import type { MessageRole } from '@/shared/api/types'
 
 import type { AnswerMeta } from './api'
 import { Markdown } from './Markdown'
+import { MESSAGE_ID_ATTR } from './useFocusMessage'
 
 function isHttpUrl(url: string): boolean {
   try {
@@ -47,11 +48,17 @@ function Sources({ sources }: { sources: AnswerSource[] }) {
   )
 }
 
+/**
+ * One message. A saved one carries its `id` and can take the focus: a search result scrolls to it
+ * and rings it for a moment (useFocusMessage sets data-highlighted).
+ */
 export function MessageBubble({
+  id,
   role,
   content,
   meta,
 }: {
+  id?: string
   role: MessageRole
   content: string
   meta?: AnswerMeta
@@ -59,11 +66,18 @@ export function MessageBubble({
   const { t } = useTranslation()
   const isUser = role === 'user'
   return (
-    <li className={cn('flex min-w-0', isUser ? 'justify-end' : 'justify-start')}>
+    <li
+      {...(id && { [MESSAGE_ID_ATTR]: id, tabIndex: -1 })}
+      className={cn(
+        'group flex min-w-0 rounded-lg outline-none',
+        isUser ? 'justify-end' : 'justify-start',
+      )}
+    >
       <div
         className={cn(
-          'max-w-[85%] min-w-0 rounded-lg px-3 py-2',
+          'max-w-[85%] min-w-0 rounded-lg px-3 py-2 ring-offset-2 ring-offset-background transition-shadow duration-500',
           isUser ? 'bg-primary text-primary-foreground' : 'border bg-card',
+          'group-data-highlighted:ring-2 group-data-highlighted:ring-amber-400',
         )}
       >
         <span className="sr-only">{isUser ? t('chat.you') : t('chat.assistant')}: </span>

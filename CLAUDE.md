@@ -70,6 +70,15 @@ renderApp helper
   /settings "Your data". All optimistic with rollback; 404 = gone (dropped, no rollback); 409
   `conversation_busy` -> toast; deleting the open conversation -> /chat. Callbacks that must
   outlive the screen (toasts, navigation) go in the hook options, not in `mutate()`.
+- Conversation search (features/chat/ConversationSearch.tsx, useSearchQuery.ts): box above the
+  list, 300 ms debounce, trimmed q of 2..500 chars, Escape/cross clears (in the mobile Sheet a
+  filled box eats the Escape). GET /conversations/search -> `{mode, items}`; results replace the
+  list; `mode: "text"` shows a quiet "simplified search" note. One query per text, the request
+  gets TanStack Query's AbortSignal, so an outdated request is aborted and its answer lands in
+  its own cache key. A result navigates with state `{focusMessageId}`; useFocusMessage loads
+  older message pages (no "page around a message" API) up to MAX_FOCUS_PAGES (10 = 200
+  messages), then scrolls to the message, focuses it and highlights it for 2 s; past the limit
+  the conversation just opens at its end.
 - 403 `consent_required` from any call -> ApiClientProvider refetches consents and navigates to
   /consents (global, no per-screen handling).
 - Data rights (backend ADR 0006, /settings "Your data"): `api.download()` for GET /me/export

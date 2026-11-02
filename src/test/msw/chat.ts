@@ -5,6 +5,9 @@ import type {
   DeleteAllRequest,
   MessageOut,
   RenameRequest,
+  SearchHitOut,
+  SearchMode,
+  SearchResults,
   SendMessageRequest,
 } from '@/shared/api/types'
 
@@ -118,6 +121,10 @@ export interface ChatFake {
   sent: SendMessageRequest[]
   /** Conversations generating an answer: PATCH works, DELETE answers 409 conversation_busy. */
   busy: Set<string>
+  /** Mode GET /conversations/search answers with ("text" = embeddings down on the backend). */
+  searchMode: SearchMode
+  /** Trimmed `q` of every search request, in order. */
+  searches: string[]
   saveUser: (conversationId: string, content: string) => MessageOut
   saveAssistant: (conversationId: string, content: string, id?: string) => MessageOut
 }
@@ -128,6 +135,8 @@ export function createChatFake(): ChatFake {
     messages: {},
     sent: [],
     busy: new Set(),
+    searchMode: 'semantic',
+    searches: [],
     saveUser(conversationId, content) {
       const saved = message(nextId('u'), 'user', content)
       fake.messages[conversationId] = [saved, ...(fake.messages[conversationId] ?? [])]
@@ -158,6 +167,38 @@ function page<T>(items: T[], url: URL) {
   return { items: items.slice(start, end), next_cursor: end < items.length ? String(end) : null }
 }
 
+export function searchHit(
+  conversationId: string,
+  messageId: string,
+  snippet: string,
+  title: string | null = `Conversation ${conversationId}`,
+  mode: SearchMode = 'semantic',
+): SearchHitOut {
+  return {
+    conversation_id: conversationId,
+    title,
+    message_id: messageId,
+    snippet,
+    created_at: '2026-10-21T10:00:00Z',
+    score: mode === 'semantic' ? 0.8 : null,
+    mode,
+  }
+}
+
+/** Search stand-in: the newest user message per conversation that contains `q` (any case). */
+function search(fake: ChatFake, q: string): SearchResults {
+  const needle = q.toLowerCase()
+  const items = fake.conversations.flatMap((c) => {
+    const found = (fake.messages[c.id] ?? []).find(
+      (m) => m.role === 'user' && m.content.toLowerCase().includes(needle),
+    )
+    return found
+      ? [searchHit(c.id, found.id, found.content.slice(0, 200), c.title, fake.searchMode)]
+      : []
+  })
+  return { mode: fake.searchMode, items }
+}
+
 function notFound() {
   return HttpResponse.json(
     { code: 'not_found', message: 'Conversation not found' },
@@ -179,6 +220,13 @@ function validationError() {
 export function chatHandlers(fake: ChatFake) {
   const find = (id: unknown) => fake.conversations.find((c) => c.id === id)
   return [
+    // Like the backend: q 2..500 characters after trimming, else 422.
+    http.get(`${API}/conversations/search`, ({ request }) => {
+      const q = new URL(request.url).searchParams.get('q')?.trim() ?? ''
+      fake.searches.push(q)
+      if (q.length < 2 || q.length > 500) return validationError()
+      return HttpResponse.json(search(fake, q))
+    }),
     http.get(`${API}/conversations`, ({ request }) =>
       HttpResponse.json(page(fake.conversations, new URL(request.url))),
     ),
