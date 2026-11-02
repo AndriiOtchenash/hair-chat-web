@@ -17,6 +17,7 @@ import type {
   DeleteAllRequest,
   MessagesPage,
   RenameRequest,
+  SearchResults,
 } from '@/shared/api/types'
 
 export const PAGE_SIZE = 20
@@ -96,6 +97,7 @@ function forgetConversation(queryClient: QueryClient, id: string): void {
     mapItems((items) => items.filter((c) => c.id !== id)),
   )
   queryClient.removeQueries({ queryKey: queryKeys.messages(id) })
+  queryClient.removeQueries({ queryKey: queryKeys.conversationSearch() })
 }
 
 /**
@@ -178,6 +180,7 @@ export function useDeleteAllConversations({
       })),
     onSuccess: () => {
       queryClient.removeQueries({ queryKey: ['messages'] })
+      queryClient.removeQueries({ queryKey: queryKeys.conversationSearch() })
       void queryClient.invalidateQueries({ queryKey: queryKeys.conversations })
       onSuccess?.()
     },
@@ -185,6 +188,37 @@ export function useDeleteAllConversations({
       queryClient.setQueryData(queryKeys.conversations, context?.previous)
       onError?.(error)
     },
+  })
+}
+
+/** Backend search: q is 2..500 characters after trimming (else 422), limit 1..20. */
+export const MIN_SEARCH_CHARS = 2
+export const MAX_SEARCH_CHARS = 500
+const SEARCH_LIMIT = 20
+
+/**
+ * GET /conversations/search for a trimmed query (disabled below MIN_SEARCH_CHARS). Each query has
+ * its own cache entry, and the request gets the query's AbortSignal: when the query text changes,
+ * the old query loses its last observer and TanStack Query aborts its request, so a late answer
+ * can neither cost a slot on the server nor replace the results of the new text.
+ */
+export function useConversationSearch(q: string) {
+  const api = useApiClient()
+  return useQuery({
+    queryKey: queryKeys.conversationSearch(q),
+    queryFn: ({ signal }) => {
+      const params = new URLSearchParams({ q, limit: String(SEARCH_LIMIT) })
+      return api.request<SearchResults>(`/conversations/search?${params.toString()}`, {
+        method: 'GET',
+        signal,
+      })
+    },
+    enabled: q.length >= MIN_SEARCH_CHARS,
+    // No cache: the backend indexes a new answer in the background ~0.5 s after the stream ends,
+    // so invalidating on `done` would come too early and a cached result would hide the answer.
+    // Every search (also the same text again) asks the server.
+    staleTime: 0,
+    gcTime: 0,
   })
 }
 

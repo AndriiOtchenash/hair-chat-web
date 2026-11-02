@@ -29,6 +29,8 @@ import {
   useRenameConversation,
 } from './api'
 import { ConversationItem } from './ConversationItem'
+import { SearchField, SearchResultsPanel } from './ConversationSearch'
+import { useSearchQuery } from './useSearchQuery'
 
 export function NewConversationButton({
   onCreated,
@@ -103,8 +105,33 @@ function useManageConversations() {
   }
 }
 
-/** Conversations, most recent first; `onNavigate` closes the mobile panel after a choice. */
+/**
+ * Search box + conversations, most recent first; while a search is active its results replace
+ * the list. `onNavigate` closes the mobile panel after a choice.
+ */
 export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
+  const { t } = useTranslation()
+  const [searchInput, setSearchInput] = useState('')
+  const searchQuery = useSearchQuery(searchInput)
+  return (
+    <nav
+      aria-label={t('chat.conversations')}
+      className="flex min-h-0 min-w-0 flex-1 flex-col gap-3"
+    >
+      <NewConversationButton onCreated={onNavigate} />
+      <SearchField value={searchInput} onChange={setSearchInput} />
+      {searchQuery ? (
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          <SearchResultsPanel q={searchQuery} onNavigate={onNavigate} />
+        </div>
+      ) : (
+        <Conversations onNavigate={onNavigate} />
+      )}
+    </nav>
+  )
+}
+
+function Conversations({ onNavigate }: { onNavigate?: () => void }) {
   const { t, i18n } = useTranslation()
   const conversations = useConversations()
   const { rename, remove } = useManageConversations()
@@ -116,11 +143,7 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
   })
 
   return (
-    <nav
-      aria-label={t('chat.conversations')}
-      className="flex min-h-0 min-w-0 flex-1 flex-col gap-3"
-    >
-      <NewConversationButton onCreated={onNavigate} />
+    <>
       <div className="min-h-0 flex-1 overflow-y-auto">
         {conversations.isPending && (
           <div role="status" className="flex flex-col items-center gap-2 py-4">
@@ -204,6 +227,6 @@ export function ConversationList({ onNavigate }: { onNavigate?: () => void }) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </nav>
+    </>
   )
 }

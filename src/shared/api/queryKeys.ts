@@ -4,6 +4,9 @@ export const queryKeys = {
   consents: ['consents'] as const,
   conversations: ['conversations'] as const,
   messages: (conversationId: string) => ['messages', conversationId] as const,
+  /** GET /conversations/search; the prefix alone matches every query. */
+  conversationSearch: (q?: string) =>
+    q === undefined ? (['conversationSearch'] as const) : (['conversationSearch', q] as const),
   /** Sources/truncated of answers streamed in this session (GET messages does not return them). */
   answerMeta: ['answerMeta'] as const,
 }

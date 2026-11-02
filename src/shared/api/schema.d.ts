@@ -138,6 +138,27 @@ export interface paths {
     patch?: never
     trace?: never
   }
+  '/conversations/search': {
+    parameters: {
+      query?: never
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    /**
+     * Search Conversations
+     * @description Search the user's own conversations by meaning (mode "semantic"); when embeddings are
+     *     unavailable, by substring of the user's messages (mode "text", score null).
+     */
+    get: operations['search_conversations_conversations_search_get']
+    put?: never
+    post?: never
+    delete?: never
+    options?: never
+    head?: never
+    patch?: never
+    trace?: never
+  }
   '/conversations/{conversation_id}/messages': {
     parameters: {
       query?: never
@@ -155,7 +176,10 @@ export interface paths {
      *     See the SSE contract in CLAUDE.md.
      *
      *     FastAPI adds a `: ping` comment every 15 s while idle and the no-buffering headers.
-     *     Background tasks run after the stream ends, and not at all if the client disconnects.
+     *     Follow-up work is spawned once the stream has ended (not at all if the client disconnects).
+     *     Not as BackgroundTasks: those run before the generation slot is freed (app.core.background),
+     *     so the user's next message would be 409 until they end. Neither needs the slot: each has
+     *     its own session, and the summarizer saves by compare-and-set (save_summary).
      */
     post: operations['send_message_conversations__conversation_id__messages_post']
     delete?: never
@@ -418,6 +442,45 @@ export interface components {
     RenameRequest: {
       /** Title */
       title: string
+    }
+    /** SearchHitOut */
+    SearchHitOut: {
+      /**
+       * Conversation Id
+       * Format: uuid
+       */
+      conversation_id: string
+      /** Title */
+      title: string | null
+      /**
+       * Message Id
+       * Format: uuid
+       */
+      message_id: string
+      /** Snippet */
+      snippet: string
+      /**
+       * Created At
+       * Format: date-time
+       */
+      created_at: string
+      /** Score */
+      score: number | null
+      mode: components['schemas']['SearchMode']
+    }
+    /**
+     * SearchMode
+     * @enum {string}
+     */
+    SearchMode: 'semantic' | 'text'
+    /**
+     * SearchResults
+     * @description Best match per conversation; semantic: by score, text: newest first.
+     */
+    SearchResults: {
+      mode: components['schemas']['SearchMode']
+      /** Items */
+      items: components['schemas']['SearchHitOut'][]
     }
     /** SendMessageRequest */
     SendMessageRequest: {
@@ -825,6 +888,38 @@ export interface operations {
           [name: string]: unknown
         }
         content?: never
+      }
+      /** @description Validation Error */
+      422: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['HTTPValidationError']
+        }
+      }
+    }
+  }
+  search_conversations_conversations_search_get: {
+    parameters: {
+      query: {
+        q: string
+        limit?: number
+      }
+      header?: never
+      path?: never
+      cookie?: never
+    }
+    requestBody?: never
+    responses: {
+      /** @description Successful Response */
+      200: {
+        headers: {
+          [name: string]: unknown
+        }
+        content: {
+          'application/json': components['schemas']['SearchResults']
+        }
       }
       /** @description Validation Error */
       422: {

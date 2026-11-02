@@ -17,6 +17,7 @@ import {
 
 import { RENAME_INPUT_ATTR } from './ConversationItem'
 import { ConversationList, NewConversationButton } from './ConversationList'
+import { SEARCH_INPUT_ATTR } from './ConversationSearch'
 
 /** /chat and /chat/:id: conversation list (side column, or a slide-out panel below md) + Outlet. */
 export function ChatLayout() {
@@ -43,10 +44,15 @@ export function ChatLayout() {
             showCloseButton={false}
             className="w-[85%] max-w-xs gap-0 p-4 pt-12"
             onEscapeKeyDown={(event) => {
-              // Escape in the rename field cancels the rename only.
+              // Escape in the rename field cancels the rename only; in a filled search box it
+              // clears the search only.
+              const { target } = event
               if (
-                event.target instanceof Element &&
-                event.target.closest(`[${RENAME_INPUT_ATTR}]`)
+                target instanceof Element &&
+                (target.closest(`[${RENAME_INPUT_ATTR}]`) ||
+                  (target instanceof HTMLInputElement &&
+                    target.hasAttribute(SEARCH_INPUT_ATTR) &&
+                    target.value !== ''))
               ) {
                 event.preventDefault()
               }

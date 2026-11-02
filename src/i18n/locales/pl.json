@@ -119,6 +119,15 @@
       "cancel": "Anuluj",
       "busy": "Rozmowa wciąż odpowiada. Spróbuj później.",
       "gone": "Ta rozmowa już nie istnieje."
+    },
+    "search": {
+      "label": "Szukaj w rozmowach",
+      "placeholder": "Szukaj w rozmowach…",
+      "clear": "Wyczyść wyszukiwanie",
+      "searching": "Szukamy…",
+      "results": "Wyniki wyszukiwania",
+      "empty": "Nic nie znaleziono.",
+      "textMode": "Uproszczone wyszukiwanie: teraz szukamy tylko dokładnych słów z Twoich pytań."
     }
   },
   "consents": {
