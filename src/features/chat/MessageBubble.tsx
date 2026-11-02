@@ -50,7 +50,8 @@ function Sources({ sources }: { sources: AnswerSource[] }) {
 
 /**
  * One message. A saved one carries its `id` and can take the focus: a search result scrolls to it
- * and rings it for a moment (useFocusMessage sets data-highlighted).
+ * and rings it in yellow for a moment (useFocusMessage sets data-highlighted, the
+ * `search-highlight` utility in index.css draws it).
  */
 export function MessageBubble({
   id,
@@ -75,9 +76,9 @@ export function MessageBubble({
     >
       <div
         className={cn(
-          'max-w-[85%] min-w-0 rounded-lg px-3 py-2 ring-offset-2 ring-offset-background transition-shadow duration-500',
+          'max-w-[85%] min-w-0 rounded-lg px-3 py-2',
           isUser ? 'bg-primary text-primary-foreground' : 'border bg-card',
-          'group-data-highlighted:ring-2 group-data-highlighted:ring-amber-400',
+          'group-data-highlighted:search-highlight',
         )}
       >
         <span className="sr-only">{isUser ? t('chat.you') : t('chat.assistant')}: </span>

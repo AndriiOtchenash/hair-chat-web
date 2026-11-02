@@ -15,7 +15,7 @@ export interface FocusMessageState {
  */
 export const MAX_FOCUS_PAGES = 10
 
-/** How long a found message stays highlighted. */
+/** How long a found message stays highlighted (= the fade in index.css `search-highlight`). */
 export const HIGHLIGHT_MS = 2000
 
 export const MESSAGE_ID_ATTR = 'data-message-id'

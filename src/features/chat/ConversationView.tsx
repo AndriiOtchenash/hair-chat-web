@@ -176,7 +176,7 @@ export function ConversationView({ conversationId }: { conversationId: string })
         {items.length === 0 && !generating && (
           <p className="py-8 text-center text-muted-foreground">{t('chat.emptyConversation')}</p>
         )}
-        <ol aria-label={t('chat.messages')} className="space-y-3 pb-2">
+        <ol aria-label={t('chat.messages')} className="space-y-3 px-1.5 pt-1.5 pb-2">
           {items.map((message) => (
             <Fragment key={message.id}>
               {safetyBefore === message.id && safetyCard}

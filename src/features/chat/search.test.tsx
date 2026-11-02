@@ -10,7 +10,7 @@ import { server } from '@/test/msw/server'
 import { renderApp } from '@/test/render'
 
 import { PAGE_SIZE } from './api'
-import { MAX_FOCUS_PAGES } from './useFocusMessage'
+import { HIGHLIGHT_ATTR, HIGHLIGHT_MS, MAX_FOCUS_PAGES } from './useFocusMessage'
 import { SEARCH_DEBOUNCE_MS } from './useSearchQuery'
 
 const C1 = 'c-1'
@@ -287,6 +287,29 @@ describe('conversation search: opening a result', () => {
     await waitFor(() => {
       expect(found.closest('li')).toHaveFocus()
     })
+  })
+
+  it(`highlights the found message for ${String(HIGHLIGHT_MS)} ms`, async () => {
+    const { user } = await openChat()
+    await user.type(searchBox(), 'split')
+    await user.click(
+      within(await screen.findByRole('list', { name: 'Search results' })).getByRole('link'),
+    )
+
+    const found = await within(await screen.findByRole('list', { name: 'Messages' })).findByText(
+      'What helps with split ends?',
+    )
+    const item = found.closest('li')
+    await waitFor(() => {
+      expect(item).toHaveAttribute(HIGHLIGHT_ATTR)
+    })
+    await waitFor(
+      () => {
+        expect(item).not.toHaveAttribute(HIGHLIGHT_ATTR)
+      },
+      { timeout: HIGHLIGHT_MS + 1000 },
+    )
+    expect(item).toHaveFocus()
   })
 
   it('loads older pages until the found message is there', async () => {
