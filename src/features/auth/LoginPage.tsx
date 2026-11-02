@@ -1,5 +1,6 @@
 import { useAuth0 } from '@auth0/auth0-react'
 import { AlertCircleIcon, CircleCheckIcon } from 'lucide-react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useSearchParams } from 'react-router'
 
@@ -16,9 +17,17 @@ export function LoginPage() {
   const { t } = useTranslation()
   const { isAuthenticated, loginWithRedirect } = useAuth0()
   const loginError = useLoginError()
-  // Auth0 logout after DELETE /me returns here (ACCOUNT_DELETED_PATH).
-  const [searchParams] = useSearchParams()
-  const accountDeleted = searchParams.get('deleted') === '1'
+  // Auth0 logout after DELETE /me returns here (ACCOUNT_DELETED_PATH). Shown once: the flag is
+  // read into state and the param is dropped from the URL, so a reload shows a plain /login.
+  const [searchParams, setSearchParams] = useSearchParams()
+  const [accountDeleted] = useState(() => searchParams.get('deleted') === '1')
+
+  useEffect(() => {
+    if (!searchParams.has('deleted')) return
+    const next = new URLSearchParams(searchParams)
+    next.delete('deleted')
+    setSearchParams(next, { replace: true })
+  }, [searchParams, setSearchParams])
 
   if (isAuthenticated) return <Navigate to="/" replace />
 

@@ -30,6 +30,26 @@ describe('LoginPage', () => {
     expect(screen.getByRole('button', { name: 'Continue with Google' })).toBeInTheDocument()
   })
 
+  it('shows the deletion message once: the param leaves the URL, a reload shows none', async () => {
+    auth0.isAuthenticated = false
+    const first = renderApp('/login?deleted=1&lang=x')
+
+    expect(await screen.findByText('Account deleted')).toBeInTheDocument()
+    await waitFor(() => {
+      expect(first.router.state.location.search).toBe('?lang=x')
+    })
+    // Still visible after the URL was cleaned (kept in state).
+    expect(screen.getByText('Account deleted')).toBeInTheDocument()
+
+    // "Reload": a fresh mount at the URL the browser now shows.
+    const { pathname, search } = first.router.state.location
+    first.unmount()
+    renderApp(pathname + search)
+
+    await screen.findByRole('button', { name: 'Continue with Google' })
+    expect(screen.queryByText('Account deleted')).not.toBeInTheDocument()
+  })
+
   it('shows no deletion message on a plain /login', async () => {
     auth0.isAuthenticated = false
     renderApp('/login')
